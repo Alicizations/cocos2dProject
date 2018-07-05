@@ -29,15 +29,11 @@ public:
 	void movePlayer(Sprite* player);
 	void KeyArrayPush(int* keyArr, int num);
 	void KeyArrayPop(int* keyArr, int num);
-
 	void loadWaveAnimationHelper();
 	void loadFrameHelper(string imagePath, string animationName, int frameNum, float frameDuration);
 	void loadFrameReverselyHelper(string imagePath, string animationName, int frameNum, float frameDuration);
 	void bombExplode(int wavePower, cocos2d::Vec2 position);
 	void ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position);
-	void loadWaveAnimationHelper();
-	void loadFrameHelper(string imagePath, string animationName, int frameNum, float frameDuration);
-	void loadFrameReverselyHelper(string imagePath, string animationName, int frameNum, float frameDuration);
 	bool checkCanMove(int x, int y);
 	bool checkObjectAndRemove(int x, int y);
 private:
@@ -46,8 +42,6 @@ private:
 	float walkDuration; 
 	float dieDuration;
 	float winDuration;
-	float waveGridSize;
-	float explosionDuration;
 	float explosionHoldDuration;
 	float waveGridSize;
 	float explosionDuration;
