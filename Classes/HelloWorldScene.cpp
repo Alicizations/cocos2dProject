@@ -238,14 +238,6 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 
 void HelloWorld::movePlayer(Sprite* player) {
 	auto speed = 10.0f;
-	float y = 0;
-	float x = 'A' == 'A' ? 0 - speed : speed;
-	auto l = player->getContentSize().width;
-	if (player->getPosition().x + x > visibleSize.width - l && x>0 || player->getPosition().x + x < l && x < 0)
-	{
-		x = 0;
-	}
-	player->runAction(MoveBy::create(0.1f, Vec2(x, y)));
 
 	if (player == player1)
 	{
