@@ -21,21 +21,27 @@ public:
 	void addEventListener();
 	void addScheduler();
 	void loadPlayerAnimationHelper(string role, string player);
-
+	void loadWaveAnimationHelper();
+	void loadFrameHelper(string imagePath, string animationName, int frameNum, float frameDuration);
+	void loadFrameReverselyHelper(string imagePath, string animationName, int frameNum, float frameDuration);
+	bool checkCanMove(int x, int y);
+	bool checkObjectAndRemove(int x, int y);
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;
 	float walkDuration; 
 	float dieDuration;
 	float winDuration;
+	float waveGridSize;
+	float explosionDuration;
 	cocos2d::Size visibleSize;
 	cocos2d::Vec2 origin;
 
-  void update(float f);
-  void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
-  void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
+	CCTMXLayer* layer1;
+	CCTMXLayer* layer2;
+	CCTMXLayer* layer3;
 
-
+	CCTMXLayer* fortune;
   // implement the "static create()" method manually
   CREATE_FUNC(HelloWorld);
 };
