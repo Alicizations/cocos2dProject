@@ -257,7 +257,6 @@ void HelloWorld::update(float f)
 	}
 }
 
-// 1 up, 2 down, 3 left, 4 right
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	switch (code)
 	{
@@ -309,7 +308,36 @@ bool HelloWorld::checkCanMove(int x, int y)
 	return true;
 }
 
-
+// 1 up, 2 down, 3 left, 4 right
+void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
+	switch (code) {
+	case EventKeyboard::KeyCode::KEY_CAPITAL_W:
+	case EventKeyboard::KeyCode::KEY_W:
+		KeyArrayPop(P1KeyArray, 1);
+		P1TryMoving = P1KeyArray[0] != 0;
+		break;
+	case EventKeyboard::KeyCode::KEY_CAPITAL_S:
+	case EventKeyboard::KeyCode::KEY_S:
+		KeyArrayPop(P1KeyArray, 2);
+		P1TryMoving = P1KeyArray[0] != 0;
+		break;
+	case EventKeyboard::KeyCode::KEY_A:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_A:
+		KeyArrayPop(P1KeyArray, 3);
+		P1TryMoving = P1KeyArray[0] != 0;
+		break;
+	case EventKeyboard::KeyCode::KEY_D:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_D:
+		KeyArrayPop(P1KeyArray, 4);
+		P1TryMoving = P1KeyArray[0] != 0;
+		break;
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+		break;
+	}
+}
 
 void HelloWorld::movePlayer(Sprite* player) {
 	auto speed = 10.0f;
