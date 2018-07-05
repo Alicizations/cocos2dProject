@@ -21,13 +21,20 @@ public:
 	void addEventListener();
 	void addScheduler();
 	void loadPlayerAnimationHelper(string role, string player);
-
+	void loadWaveAnimationHelper();
+	void loadFrameHelper(string imagePath, string animationName, int frameNum, float frameDuration);
+	void loadFrameReverselyHelper(string imagePath, string animationName, int frameNum, float frameDuration);
+	void bombExplode(int wavePower, cocos2d::Vec2 position);
+	void ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position);
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;
 	float walkDuration; 
 	float dieDuration;
 	float winDuration;
+	float waveGridSize;
+	float explosionDuration;
+	float explosionHoldDuration;
 	cocos2d::Size visibleSize;
 	cocos2d::Vec2 origin;
 
