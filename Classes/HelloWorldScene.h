@@ -36,6 +36,8 @@ public:
 	void ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position);
 	bool checkCanMove(int x, int y);
 	bool checkObjectAndRemove(int x, int y);
+
+	void layBomb();
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;

@@ -166,7 +166,7 @@ void HelloWorld::addSprite()
 	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveTailGeneratingAnimation"));
 	//walkAction->setS
 	//player1->runAction(RepeatForever::create(walkAction));
-	bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	//bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
 
 }
 
@@ -282,6 +282,7 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		break;
 	case EventKeyboard::KeyCode::KEY_SPACE:
 		// fire
+		layBomb();
 		break;
 	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
 	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
@@ -289,6 +290,28 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
 		break;
 	}
+}
+
+void HelloWorld::layBomb()
+{
+	//if (P1IsMoving)
+	{
+		//return;
+	}
+	auto bomb = Sprite::create();
+	bomb->setPosition(Vec2(P1PositionX, P1PositionY));
+	this->addChild(bomb, 1);
+	auto bombSequence = Sequence::create(
+		Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
+		CallFunc::create([bomb, this]()
+		{
+			bomb->removeFromParentAndCleanup(true);
+			bombExplode(1.0, bomb->getPosition());
+		}),
+		nullptr
+		);
+
+	bomb->runAction(bombSequence);
 }
 
 bool HelloWorld::checkCanMove(int x, int y)
