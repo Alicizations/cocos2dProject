@@ -62,6 +62,8 @@ void HelloWorld::initalizeParameters()
 	P1InitialY = 20;
 	P2InitialX = 0;
 	P2InitialY = 0;
+	P1Dir = 3;
+	P2Dir = 3;
 }
 
 void HelloWorld::loadAnimation()
@@ -335,6 +337,10 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 		KeyArrayPop(P1KeyArray, 4);
 		P1TryMoving = P1KeyArray[0] != 0;
 		break;
+	case EventKeyboard::KeyCode::KEY_F:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_F:
+		flash(player1);
+		break;
 	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
 	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
@@ -356,19 +362,26 @@ void HelloWorld::movePlayer(Sprite* player) {
 		{
 		case 1:
 			y = 1;
-			//bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
+			P1Dir = 1;
+			P2Dir = 1;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkUpAnimation"));
 			break;
 		case 2:
 			y = -1;
+			P1Dir = 2;
+			P2Dir = 2;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkDownAnimation"));
 			break;
 		case 3:
 			x = -1;
+			P1Dir = 3;
+			P2Dir = 3;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkSidewayAnimation"));
 			break;
 		case 4:
 			x = 1;
+			P1Dir = 4;
+			P2Dir = 4;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkSidewayAnimation"));
 			break;
 		default:
@@ -445,4 +458,44 @@ bool HelloWorld::checkObjectAndRemove(int x, int y)
 		return true;
 	}
 	return false;
+}
+
+void HelloWorld::flash(Sprite * player)
+{
+	player->stopAllActions();
+	if (player == player1)
+	{
+		P1IsMoving = false;
+		int x = 0;
+		int y = 0;
+		switch (P1Dir)
+		{
+		case 1:
+			y = 2;
+			break;
+		case 2:
+			y = -2;
+			break;
+		case 3:
+			x = -2;
+			break;
+		case 4:
+			x = 2;
+			break;
+		}
+		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0)
+		{
+			P1PositionX += x;
+			P1PositionY += y;
+			player->setPosition(Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY));
+		}
+		else
+		{
+			
+		}
+	}
+	else
+	{
+		P2IsMoving = false;
+	}
 }

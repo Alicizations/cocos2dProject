@@ -36,6 +36,7 @@ public:
 	void ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position);
 	bool checkCanMove(int x, int y);
 	bool checkObjectAndRemove(int x, int y);
+	void flash(Sprite* player);
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;
@@ -55,6 +56,7 @@ private:
 	int P1PositionY;
 	int P1InitialX;
 	int P1InitialY;
+	int P1Dir;
 	bool P2TryMoving;
 	bool P2IsMoving;
 	int P2KeyArray[5];
@@ -62,6 +64,9 @@ private:
 	int P2PositionY;
 	int P2InitialX;
 	int P2InitialY;
+	int P2Dir;
+	// skill relative
+
 
 
 	CCTMXLayer* layer1;
