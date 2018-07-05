@@ -45,6 +45,19 @@ void HelloWorld::initalizeParameters()
 	walkDuration = 0.5f;
 	dieDuration = 0.4f;
 	winDuration = 0.3f;
+	// move relative
+	P1TryMoving = false;
+	P1IsMoving = false;
+	P2TryMoving = false;
+	P2IsMoving = false;
+	for (int i = 0; i < 5; i++)
+	{
+		P1KeyArray[i] = P2KeyArray[i] = 0;
+	}
+	P1PositionX = 1;
+	P1PositionY = 1;
+	P2PositionX = 14;
+	P2PositionY = 14;
 }
 
 void HelloWorld::loadAnimation()
@@ -124,11 +137,11 @@ void HelloWorld::addSprite()
 	auto texture = Director::getInstance()->getTextureCache()->addImage("baobao/player.png");
 	auto frame = SpriteFrame::createWithTexture(texture, CC_RECT_PIXELS_TO_POINTS(Rect(0, 0, texture->getPixelsWide(), texture->getPixelsHigh())));
 	player1 = Sprite::createWithSpriteFrame(frame);
-	player1->setPosition(visibleSize.width/2, visibleSize.height/2);
+	player1->setPosition(16+32, 16+32);
 	this->addChild(player1, 1);
 	//for debug
-	auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkDownAnimation"));
-	player1->runAction(RepeatForever::create(walkAction));
+	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkDownAnimation"));
+	//player1->runAction(RepeatForever::create(walkAction));
 
 }
 
@@ -138,7 +151,7 @@ void HelloWorld::addEventListener()
 	auto keyListener = EventListenerKeyboard::create();
 	keyListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
 	keyListener->onKeyReleased = CC_CALLBACK_2(HelloWorld::onKeyReleased, this);
-	this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyListener, player);
+	this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyListener, this);
 }
 
 void HelloWorld::addScheduler()
@@ -148,37 +161,172 @@ void HelloWorld::addScheduler()
 
 void HelloWorld::update(float f)
 {
+	if (!P1IsMoving && P1TryMoving)
+	{
+		this->movePlayer(player1);
+	}
+	if (!P2IsMoving && P2TryMoving)
+	{
+		this->movePlayer(player2);
+	}
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
-	switch (code) {
-	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	switch (code)
+	{
+	case EventKeyboard::KeyCode::KEY_CAPITAL_W:
+	case EventKeyboard::KeyCode::KEY_W:
+		P1TryMoving = true;
+		KeyArrayPush(P1KeyArray, 1);
+		break;
+	case EventKeyboard::KeyCode::KEY_CAPITAL_S:
+	case EventKeyboard::KeyCode::KEY_S:
+		P1TryMoving = true;
+		KeyArrayPush(P1KeyArray, 2);
+		break;
 	case EventKeyboard::KeyCode::KEY_CAPITAL_A:
 	case EventKeyboard::KeyCode::KEY_A:
-		movekey = 'A';
-		isMove = true;
+		P1TryMoving = true;
+		KeyArrayPush(P1KeyArray, 3);
 		break;
-	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
 	case EventKeyboard::KeyCode::KEY_CAPITAL_D:
 	case EventKeyboard::KeyCode::KEY_D:
-		movekey = 'D';
-		isMove = true;
+		P1TryMoving = true;
+		KeyArrayPush(P1KeyArray, 4);
 		break;
 	case EventKeyboard::KeyCode::KEY_SPACE:
-		fire();
+		// fire
+		break;
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
 		break;
 	}
 }
 
+// 1 up, 2 down, 3 left, 4 right
 void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 	switch (code) {
-	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_W:
+	case EventKeyboard::KeyCode::KEY_W:
+		KeyArrayPop(P1KeyArray, 1);
+		P1TryMoving = P1KeyArray[0] != 0;
+		break;
+	case EventKeyboard::KeyCode::KEY_CAPITAL_S:
+	case EventKeyboard::KeyCode::KEY_S:
+		KeyArrayPop(P1KeyArray, 2);
+		P1TryMoving = P1KeyArray[0] != 0;
+		break;
 	case EventKeyboard::KeyCode::KEY_A:
 	case EventKeyboard::KeyCode::KEY_CAPITAL_A:
-	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+		KeyArrayPop(P1KeyArray, 3);
+		P1TryMoving = P1KeyArray[0] != 0;
+		break;
 	case EventKeyboard::KeyCode::KEY_D:
 	case EventKeyboard::KeyCode::KEY_CAPITAL_D:
-		isMove = false;
+		KeyArrayPop(P1KeyArray, 4);
+		P1TryMoving = P1KeyArray[0] != 0;
 		break;
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+		break;
+	}
+}
+
+void HelloWorld::movePlayer(Sprite* player) {
+	auto speed = 10.0f;
+	float y = 0;
+	float x = 'A' == 'A' ? 0 - speed : speed;
+	auto l = player->getContentSize().width;
+	if (player->getPosition().x + x > visibleSize.width - l && x>0 || player->getPosition().x + x < l && x < 0)
+	{
+		x = 0;
+	}
+	player->runAction(MoveBy::create(0.1f, Vec2(x, y)));
+
+	if (player == player1)
+	{
+		int dir = P1KeyArray[P1KeyArray[0]];
+		int x = 0;
+		int y = 0;
+		Animate* walkAction;
+		switch (dir)
+		{
+		case 1:
+			y = 1;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkUpAnimation"));
+			break;
+		case 2:
+			y = -1;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkDownAnimation"));
+			break;
+		case 3:
+			x = -1;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkSidewayAnimation"));
+			break;
+		case 4:
+			x = 1;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkSidewayAnimation"));
+			break;
+		default:
+			break;
+		}
+		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0)
+		{
+			P1IsMoving = true;
+			P1PositionX += x;
+			P1PositionY += y;
+			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(0.5f, Vec2(16 + 32 * P1PositionX, 16 + 32 * P1PositionY)), walkAction);
+			player1->setFlippedX(x == -1);
+			auto ac = Sequence::create(moveAC, CallFunc::create([this]() {this->P1IsMoving = false; }), nullptr);
+			player1->runAction(ac);
+		}
+	}
+	else
+	{
+
+	}
+}
+
+void HelloWorld::KeyArrayPush(int * keyArr, int num)
+{
+	if (keyArr[0] >= 4)
+	{
+		KeyArrayPop(keyArr, num);
+		keyArr[4] = num;
+		keyArr[0]++;
+	}
+	else 
+	{
+		keyArr[++keyArr[0]] = num;
+	}
+}
+
+void HelloWorld::KeyArrayPop(int * keyArr, int num)
+{
+	if (num > 4 || num < 1 || keyArr == nullptr)
+	{
+		return;
+	}
+	else
+	{
+		for (int i = 1; i < 5; i++)
+		{
+			if (keyArr[i] == num)
+			{
+				if (i != 4)
+				{
+					for (int j = i; j < 4; j++)
+					{
+						keyArr[i] = keyArr[i+1];
+					}
+				}
+				keyArr[0]--;
+				return;
+			}
+		}
 	}
 }

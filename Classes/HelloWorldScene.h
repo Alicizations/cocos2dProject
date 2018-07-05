@@ -5,6 +5,7 @@
 #include <string>
 using std::string;
 using std::to_string;
+USING_NS_CC;
 
 class HelloWorld : public cocos2d::Scene {
 public:
@@ -22,6 +23,13 @@ public:
 	void addScheduler();
 	void loadPlayerAnimationHelper(string role, string player);
 
+	void update(float f);
+	void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
+	void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
+	void movePlayer(Sprite* player);
+	void KeyArrayPush(int* keyArr, int num);
+	void KeyArrayPop(int* keyArr, int num);
+
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;
@@ -30,10 +38,17 @@ private:
 	float winDuration;
 	cocos2d::Size visibleSize;
 	cocos2d::Vec2 origin;
-
-  void update(float f);
-  void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
-  void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
+	// move relative
+	bool P1TryMoving;
+	bool P1IsMoving;
+	int P1KeyArray[5];
+	int P1PositionX;
+	int P1PositionY;
+	bool P2TryMoving;
+	bool P2IsMoving;
+	int P2KeyArray[5];
+	int P2PositionX;
+	int P2PositionY;
 
 
   // implement the "static create()" method manually
