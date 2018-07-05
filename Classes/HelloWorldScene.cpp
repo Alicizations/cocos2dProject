@@ -172,7 +172,7 @@ void HelloWorld::addSprite()
 	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveTailGeneratingAnimation"));
 	//walkAction->setS
 	//player1->runAction(RepeatForever::create(walkAction));
-	bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	//bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
 
 }
 
@@ -184,7 +184,8 @@ void HelloWorld::bombExplode(int wavePower, Vec2 position)
 	ExplosionWaveGenerator("down", 0, -1, wavePower, position);
 	ExplosionWaveGenerator("left", -1, 0, wavePower, position);
 	ExplosionWaveGenerator("right", 1, 0, wavePower, position);
-
+	
+	
 	auto centerWave = Sprite::create();
 	centerWave->setPosition(position.x + wavePower * waveGridSize * 0, position.y + wavePower * waveGridSize * 0);
 	this->addChild(centerWave, 1);
@@ -200,6 +201,7 @@ void HelloWorld::bombExplode(int wavePower, Vec2 position)
 		nullptr
 	);
 	centerWave->runAction(centerSequence);
+	centerWave->setScale(1.2f);
 }
 
 void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position)
@@ -219,7 +221,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 			nullptr
 		);
 		wave->runAction(waveSequence);
-		//wave->setScale(1.0f);
+		wave->setScale(1.20f);
 	}
 	auto waveTail = Sprite::create();
 	waveTail->setPosition(position.x + wavePower * waveGridSize * offsetX, position.y + wavePower * waveGridSize * offsetY);
@@ -234,7 +236,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 		nullptr
 	);
 	waveTail->runAction(waveSequence);
-	//waveTail->setScale(0.8f);
+	waveTail->setScale(1.20f);
 }
 
 void HelloWorld::addEventListener()
@@ -288,6 +290,7 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		break;
 	case EventKeyboard::KeyCode::KEY_SPACE:
 		// fire
+		layBomb();
 		break;
 	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
 	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
@@ -295,6 +298,24 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
 		break;
 	}
+}
+
+void HelloWorld::layBomb()
+{
+	auto bomb = Sprite::create();
+	bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
+	this->addChild(bomb, 0);
+	auto bombSequence = Sequence::create(
+		Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
+		CallFunc::create([bomb, this]()
+		{
+			bomb->removeFromParentAndCleanup(true);
+			bombExplode(3.0, bomb->getPosition());
+		}),
+		nullptr
+		);
+
+	bomb->runAction(bombSequence);
 }
 
 bool HelloWorld::checkCanMove(int x, int y)
