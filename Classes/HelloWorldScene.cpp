@@ -76,7 +76,7 @@ void HelloWorld::initalizeParameters()
 	P1PositionY = 1;
 	P2PositionX = 14;
 	P2PositionY = 14;
-}
+
 	waveGridSize = 32;
 	explosionDuration = 0.5f;
 }
@@ -221,6 +221,8 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
 	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
 		break;
+	}
+}
 
 bool HelloWorld::checkCanMove(int x, int y)
 {
