@@ -58,9 +58,6 @@ void HelloWorld::initalizeParameters()
 	P1PositionY = 1;
 	P2PositionX = 14;
 	P2PositionY = 14;
-
-	waveGridSize = 32;
-	explosionDuration = 0.5f;
 }
 
 void HelloWorld::loadAnimation()
@@ -139,14 +136,14 @@ void HelloWorld::loadFrameReverselyHelper(string imagePath, string animationName
 void HelloWorld::loadMap()
 {
 	TMXTiledMap *tmx = TMXTiledMap::create("map/map.tmx");
-	tmx->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	tmx->setPosition(96 + visibleSize.width / 2, visibleSize.height / 2);
 	tmx->setAnchorPoint(Vec2(0.5, 0.5));
 
 	//除背景 以外 其他的都用它缩放（具体看情况）
 	//double scale_x = visibleSize.width / 512; 
 	//背景用它缩放（具体看情况）
 	//double scale_y = visibleSize.height / 512;
-	tmx->setScaleX(2.0);
+	tmx->setScaleX(1.5);
 	tmx->setScaleY(1.5);
 	addChild(tmx, 0);
 
@@ -165,13 +162,14 @@ void HelloWorld::addSprite()
 	player1->setPosition(16+32, 16+32);
 	this->addChild(player1, 1);
 	//for debug
-	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkDownAnimation"));
+	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveGeneratingAnimation"));
 	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveTailGeneratingAnimation"));
 	//walkAction->setS
 	//player1->runAction(RepeatForever::create(walkAction));
 	bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
 
 }
+
 
 void HelloWorld::bombExplode(int wavePower, Vec2 position)
 {
@@ -259,6 +257,7 @@ void HelloWorld::update(float f)
 	}
 }
 
+// 1 up, 2 down, 3 left, 4 right
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	switch (code)
 	{
@@ -310,36 +309,7 @@ bool HelloWorld::checkCanMove(int x, int y)
 	return true;
 }
 
-// 1 up, 2 down, 3 left, 4 right
-void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
-	switch (code) {
-	case EventKeyboard::KeyCode::KEY_CAPITAL_W:
-	case EventKeyboard::KeyCode::KEY_W:
-		KeyArrayPop(P1KeyArray, 1);
-		P1TryMoving = P1KeyArray[0] != 0;
-		break;
-	case EventKeyboard::KeyCode::KEY_CAPITAL_S:
-	case EventKeyboard::KeyCode::KEY_S:
-		KeyArrayPop(P1KeyArray, 2);
-		P1TryMoving = P1KeyArray[0] != 0;
-		break;
-	case EventKeyboard::KeyCode::KEY_A:
-	case EventKeyboard::KeyCode::KEY_CAPITAL_A:
-		KeyArrayPop(P1KeyArray, 3);
-		P1TryMoving = P1KeyArray[0] != 0;
-		break;
-	case EventKeyboard::KeyCode::KEY_D:
-	case EventKeyboard::KeyCode::KEY_CAPITAL_D:
-		KeyArrayPop(P1KeyArray, 4);
-		P1TryMoving = P1KeyArray[0] != 0;
-		break;
-	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
-	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
-	case EventKeyboard::KeyCode::KEY_UP_ARROW:
-	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
-		break;
-	}
-}
+
 
 void HelloWorld::movePlayer(Sprite* player) {
 	auto speed = 10.0f;
