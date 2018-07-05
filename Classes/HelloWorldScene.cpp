@@ -1,8 +1,5 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-#include "LoginRegisterScene.h"
-#include "UsersInfoScene.h"
-#include "ModifyUserScene.h"
 
 USING_NS_CC;
 
@@ -47,35 +44,8 @@ bool HelloWorld::init() {
     closeItem->setPosition(Vec2(x, y));
   }
 
-  auto gotoLoginScene = MenuItemFont::create("Login/Register", [](Ref *pSender) {
-    Director::getInstance()->pushScene(LoginRegisterScene::createScene());
-  });
-  if (gotoLoginScene) {
-    float x = origin.x + visibleSize.width / 2;
-    float y = origin.y + visibleSize.height - gotoLoginScene->getContentSize().height / 2;
-    gotoLoginScene->setPosition(Vec2(x, y));
-  }
-
-  auto gotoUsersScene = MenuItemFont::create("Users", [](Ref *pSender) {
-    Director::getInstance()->pushScene(UsersInfoScene::createScene());
-  });
-  if (gotoUsersScene) {
-    float x = origin.x + visibleSize.width / 2;
-    float y = origin.y + visibleSize.height - gotoUsersScene->getContentSize().height / 2 - 50;
-    gotoUsersScene->setPosition(Vec2(x, y));
-  }
-
-  auto gotoModifyScene = MenuItemFont::create("Modify", [](Ref *pSender) {
-    Director::getInstance()->pushScene(ModifyUserScene::createScene());
-  });
-  if (gotoModifyScene) {
-    float x = origin.x + visibleSize.width / 2;
-    float y = origin.y + visibleSize.height - gotoModifyScene->getContentSize().height / 2 - 100;
-    gotoModifyScene->setPosition(Vec2(x, y));
-  }
-
   // create menu, it's an autorelease object
-  auto menu = Menu::create(closeItem, gotoLoginScene, gotoUsersScene, gotoModifyScene, NULL);
+  auto menu = Menu::create(closeItem, NULL);
   menu->setPosition(Vec2::ZERO);
   this->addChild(menu, 1);
 
