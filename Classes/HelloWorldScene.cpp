@@ -73,8 +73,8 @@ void HelloWorld::loadAnimation()
 
 void HelloWorld::loadPlayerAnimationHelper(string role, string player)
 {
-	loadFrameHelper(role + "/walkUp", player + "WalkUpAnimation", 5, walkDuration / 5.0f);
-	loadFrameHelper(role + "/walkDown", player + "WalkDownAnimation", 5, walkDuration / 5.0f);
+	loadFrameHelper(role + "/walkUp", player + "WalkUpAnimation", 4, walkDuration / 5.0f);
+	loadFrameHelper(role + "/walkDown", player + "WalkDownAnimation", 4, walkDuration / 5.0f);
 	loadFrameHelper(role + "/walkSideway", player + "WalkSidewayAnimation", 5, walkDuration / 5.0f);
 	loadFrameHelper(role + "/die", player + "DieAnimation", 4, dieDuration / 4.0f);
 	loadFrameHelper(role + "/win", player + "WinAnimation", 3, winDuration / 3.0f);
@@ -148,7 +148,7 @@ void HelloWorld::addSprite()
 	player1->setPosition(16+32, 16+32);
 	this->addChild(player1, 1);
 	//for debug
-	auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WinAnimation"));
+	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkDownAnimation"));
 	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveTailGeneratingAnimation"));
 	//walkAction->setS
 	//player1->runAction(RepeatForever::create(walkAction));
