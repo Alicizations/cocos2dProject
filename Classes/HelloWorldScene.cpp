@@ -39,7 +39,7 @@ void HelloWorld::initalizeParameters()
 {
 	visibleSize = Director::getInstance()->getVisibleSize();
 	origin = Director::getInstance()->getVisibleOrigin();
-	walkDuration = 0.5f;
+	walkDuration = 0.1f;
 	dieDuration = 0.4f;
 	winDuration = 0.3f;
 	waveGridSize = 32;
@@ -242,7 +242,7 @@ void HelloWorld::addEventListener()
 
 void HelloWorld::addScheduler()
 {
-	schedule(schedule_selector(HelloWorld::update), 0.05f, kRepeatForever, 0);
+	schedule(schedule_selector(HelloWorld::update), 0.01f, kRepeatForever, 0);
 }
 
 void HelloWorld::update(float f)
@@ -352,6 +352,7 @@ void HelloWorld::movePlayer(Sprite* player) {
 		{
 		case 1:
 			y = 1;
+			//bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkUpAnimation"));
 			break;
 		case 2:
@@ -371,13 +372,19 @@ void HelloWorld::movePlayer(Sprite* player) {
 		}
 		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0)
 		{
+			player1->stopAllActions();
 			P1IsMoving = true;
 			P1PositionX += x;
 			P1PositionY += y;
-			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(0.5f, Vec2(16 + 32 * P1PositionX, 16 + 32 * P1PositionY)), walkAction);
+			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(walkDuration, Vec2(16 + 32 * P1PositionX, 16 + 32 * P1PositionY)), walkAction);
 			player1->setFlippedX(x == -1);
-			auto ac = Sequence::create(moveAC, CallFunc::create([this]() {this->P1IsMoving = false; }), nullptr);
+			auto ac = Sequence::create(moveAC, CallFunc::create([this]() { if (this->P1TryMoving == true) { this->movePlayer(this->player1); } else { this->P1IsMoving = false; } }), nullptr);
 			player1->runAction(ac);
+		}
+		else
+		{
+			player1->runAction(walkAction);
+			this->P1IsMoving = false;
 		}
 	}
 	else
@@ -416,7 +423,7 @@ void HelloWorld::KeyArrayPop(int * keyArr, int num)
 				{
 					for (int j = i; j < 4; j++)
 					{
-						keyArr[i] = keyArr[i+1];
+						keyArr[j] = keyArr[j+1];
 					}
 				}
 				keyArr[0]--;
