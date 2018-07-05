@@ -10,13 +10,12 @@ public:
   virtual bool init();
 
   // a selector callback
-  void menuCloseCallback(cocos2d::Ref* pSender);
 
   void loadAnimation();
   void loadMap();
   void addSprite();
   void addEventListener();
-  void addSchedualer();
+  void addScheduler();
 
 
   // implement the "static create()" method manually
@@ -24,4 +23,3 @@ public:
 };
 
 #endif // __HELLOWORLD_SCENE_H__
-// test245
