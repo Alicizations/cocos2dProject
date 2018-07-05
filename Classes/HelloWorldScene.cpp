@@ -1,6 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-
+//hahahahaasdfasdfasdf
 USING_NS_CC;
 
 Scene* HelloWorld::createScene() {
@@ -53,6 +53,31 @@ bool HelloWorld::init() {
   // 3. add your codes below...
 
   return true;
+}
+
+void HelloWorld::loadAnimation()
+{
+
+}
+
+void HelloWorld::loadMap()
+{
+
+}
+
+void HelloWorld::addSprite()
+{
+
+}
+
+void HelloWorld::addEventListener()
+{
+
+}
+
+void HelloWorld::addSchedualer()
+{
+
 }
 
 
