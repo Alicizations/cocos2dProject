@@ -17,6 +17,10 @@ public:
   void addEventListener();
   void addScheduler();
 
+  void update(float f);
+  void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
+  void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
+
 
   // implement the "static create()" method manually
   CREATE_FUNC(HelloWorld);

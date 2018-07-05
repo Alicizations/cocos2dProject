@@ -56,10 +56,51 @@ void HelloWorld::addSprite()
 
 void HelloWorld::addEventListener()
 {
-
+	// KeyboardListener
+	auto keyListener = EventListenerKeyboard::create();
+	keyListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
+	keyListener->onKeyReleased = CC_CALLBACK_2(HelloWorld::onKeyReleased, this);
+	this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyListener, player);
 }
 
 void HelloWorld::addScheduler()
 {
+	schedule(schedule_selector(HelloWorld::update), 0.05f, kRepeatForever, 0);
+}
 
+void HelloWorld::update(float f)
+{
+}
+
+void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
+	switch (code) {
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_A:
+	case EventKeyboard::KeyCode::KEY_A:
+		movekey = 'A';
+		isMove = true;
+		break;
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_D:
+	case EventKeyboard::KeyCode::KEY_D:
+		movekey = 'D';
+		isMove = true;
+		break;
+	case EventKeyboard::KeyCode::KEY_SPACE:
+		fire();
+		break;
+	}
+}
+
+void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
+	switch (code) {
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_A:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_A:
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+	case EventKeyboard::KeyCode::KEY_D:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_D:
+		isMove = false;
+		break;
+	}
 }
