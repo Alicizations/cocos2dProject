@@ -42,7 +42,7 @@ void HelloWorld::initalizeParameters()
 	walkDuration = 0.1f;
 	dieDuration = 0.4f;
 	winDuration = 0.3f;
-	waveGridSize = 32;
+	waveGridSize = 37.5;
 	explosionDuration = 1.0f;
 	explosionHoldDuration = 0.5f;
 	// move relative
@@ -55,9 +55,13 @@ void HelloWorld::initalizeParameters()
 		P1KeyArray[i] = P2KeyArray[i] = 0;
 	}
 	P1PositionX = 1;
-	P1PositionY = 1;
+	P1PositionY = 0;
 	P2PositionX = 14;
 	P2PositionY = 14;
+	P1InitialX = 215;
+	P1InitialY = 20;
+	P2InitialX = 0;
+	P2InitialY = 0;
 }
 
 void HelloWorld::loadAnimation()
@@ -159,7 +163,7 @@ void HelloWorld::addSprite()
 	auto texture = Director::getInstance()->getTextureCache()->addImage("baobao/player.png");
 	auto frame = SpriteFrame::createWithTexture(texture, CC_RECT_PIXELS_TO_POINTS(Rect(0, 0, texture->getPixelsWide(), texture->getPixelsHigh())));
 	player1 = Sprite::createWithSpriteFrame(frame);
-	player1->setPosition(16+32, 16+32);
+	player1->setPosition(P1InitialX + P1PositionX * waveGridSize, P1InitialY + P1PositionY * waveGridSize);
 	this->addChild(player1, 1);
 	//for debug
 	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveGeneratingAnimation"));
@@ -242,7 +246,7 @@ void HelloWorld::addEventListener()
 
 void HelloWorld::addScheduler()
 {
-	schedule(schedule_selector(HelloWorld::update), 0.01f, kRepeatForever, 0);
+	schedule(schedule_selector(HelloWorld::update), 0.05f, kRepeatForever, 0);
 }
 
 void HelloWorld::update(float f)
@@ -399,13 +403,14 @@ void HelloWorld::movePlayer(Sprite* player) {
 			P1IsMoving = true;
 			P1PositionX += x;
 			P1PositionY += y;
-			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(walkDuration, Vec2(16 + 32 * P1PositionX, 16 + 32 * P1PositionY)), walkAction);
+			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(walkDuration, Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY)), walkAction);
 			player1->setFlippedX(x == -1);
 			auto ac = Sequence::create(moveAC, CallFunc::create([this]() { if (this->P1TryMoving == true) { this->movePlayer(this->player1); } else { this->P1IsMoving = false; } }), nullptr);
 			player1->runAction(ac);
 		}
 		else
 		{
+			player1->setFlippedX(x == -1);
 			player1->runAction(walkAction);
 			this->P1IsMoving = false;
 		}
