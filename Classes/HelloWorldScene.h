@@ -53,11 +53,15 @@ private:
 	int P1KeyArray[5];
 	int P1PositionX;
 	int P1PositionY;
+	int P1InitialX;
+	int P1InitialY;
 	bool P2TryMoving;
 	bool P2IsMoving;
 	int P2KeyArray[5];
 	int P2PositionX;
 	int P2PositionY;
+	int P2InitialX;
+	int P2InitialY;
 
 
 	CCTMXLayer* layer1;
