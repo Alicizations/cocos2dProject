@@ -69,6 +69,8 @@ private:
 	int P2Dir;
 	// skill relative
 
+	// Bomb relative
+	cocos2d::Sprite* BombMatrix[15][15];
 
 
 	CCTMXLayer* layer1;

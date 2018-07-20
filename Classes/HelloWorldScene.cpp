@@ -64,6 +64,14 @@ void HelloWorld::initalizeParameters()
 	P2InitialY = 0;
 	P1Dir = 3;
 	P2Dir = 3;
+	// bomb matrix
+	for (int i = 0; i < 16; i++)
+	{
+		for (int j = 0; j < 16; j++)
+		{
+			BombMatrix[i][j] = nullptr;
+		}
+	}
 }
 
 void HelloWorld::loadAnimation()
@@ -316,22 +324,31 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 
 void HelloWorld::layBomb()
 {
-	auto bomb = Sprite::create();
-	bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
-	this->addChild(bomb, 0);
 	int posX = P1PositionX;
 	int posY = P1PositionY;
-	auto bombSequence = Sequence::create(
-		Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
-		CallFunc::create([bomb, posX, posY, this]()
-		{
-			bomb->removeFromParentAndCleanup(true);
-			bombExplode(3.0, bomb->getPosition(), posX, posY);
-		}),
-		nullptr
-		);
+	if (BombMatrix[posX][posY] != nullptr)
+	{
+		return;
+	}
+	else
+	{
+		auto bomb = Sprite::create();
+		bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
+		this->addChild(bomb, 0);
+		auto bombSequence = Sequence::create(
+			Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
+			CallFunc::create([bomb, posX, posY, this]()
+			{
+				this->BombMatrix[posX][posY] = nullptr;
+				bomb->removeFromParentAndCleanup(true);
+				bombExplode(3.0, bomb->getPosition(), posX, posY);
+			}),
+			nullptr
+			);
 
-	bomb->runAction(bombSequence);
+		bomb->runAction(bombSequence);
+		BombMatrix[posX][posY] = bomb;
+	}
 }
 
 bool HelloWorld::checkCanMove(int x, int y)
