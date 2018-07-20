@@ -77,7 +77,7 @@ void HelloWorld::initalizeParameters()
 		}
 	}
 	// 最大放置数量
-	P1BombMax = 1;
+	P1BombMax = 10;
 	// 目前放置的数量
 	P1BombLaid = 0;
 	// 炸弹威力
@@ -465,22 +465,27 @@ void HelloWorld::layBomb(Sprite* player)
 	
 }
 
-bool HelloWorld::checkCanMove(int x, int y)
+bool HelloWorld::checkCanMove(int posX, int posY)
 {
-	y = 15 - y;
-	if (layer1->tileAt(ccp(x, y)))
+	int MapX = posX;
+	int MapY = 15 - posY;
+	if (layer1->tileAt(ccp(MapX, MapY)))
 	{
 		return false;
 	}
-	else if (layer2->tileAt(ccp(x, y)))
+	else if (layer2->tileAt(ccp(MapX, MapY)))
 	{
 		return false;
 	}
-	else if (layer3->tileAt(ccp(x, y)))
+	else if (layer3->tileAt(ccp(MapX, MapY)))
 	{
 		return false;
 	}
-	else if (fortune->tileAt(ccp(x, y)))
+	else if (fortune->tileAt(ccp(MapX, MapY)))
+	{
+		return false;
+	}
+	else if (BombMatrix[posX][posY] != nullptr)
 	{
 		return false;
 	}
