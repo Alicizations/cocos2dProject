@@ -43,6 +43,13 @@ private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;
 	float walkDuration; 
+
+	float P1Speed;
+	float P2Speed;
+	float SpeedIncreasingDegree;
+	float MaxSpeed;
+
+
 	float dieDuration;
 	float winDuration;
 	float explosionHoldDuration;
@@ -71,7 +78,14 @@ private:
 
 	// Bomb relative
 	cocos2d::Sprite* BombMatrix[15][15];
-
+	int P1BombMax;
+	int P1BombLaid;
+	int P1BombWavePower;
+	int P2BombMax;
+	int P2BombLaid;
+	int P2BombWavePower;
+	
+	
 
 	CCTMXLayer* layer1;
 	CCTMXLayer* layer2;

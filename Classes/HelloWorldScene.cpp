@@ -2,6 +2,10 @@
 #include "SimpleAudioEngine.h"
 USING_NS_CC;
 
+
+#define P1WalkDuration (1.0f / P1Speed)
+#define P2WalkDuration (1.0f / P2Speed)
+
 Scene* HelloWorld::createScene() 
 {
 	return HelloWorld::create();
@@ -72,6 +76,23 @@ void HelloWorld::initalizeParameters()
 			BombMatrix[i][j] = nullptr;
 		}
 	}
+	// 最大放置数量
+	P1BombMax = 1;
+	// 目前放置的数量
+	P1BombLaid = 0;
+	// 炸弹威力
+	P1BombWavePower = 1;
+	P2BombMax = 1;
+	P2BombLaid = 0;
+	P2BombWavePower = 1;
+
+	// 初始速度
+	P1Speed = 2;
+	P2Speed = 2;
+	// 每检获一个速度道具提升的幅度
+	SpeedIncreasingDegree = 2;
+	// 最大速度
+	MaxSpeed = 10;
 }
 
 void HelloWorld::loadAnimation()
@@ -84,8 +105,8 @@ void HelloWorld::loadAnimation()
 
 void HelloWorld::loadPlayerAnimationHelper(string role, string player)
 {
-	loadFrameHelper(role + "/walkUp", player + "WalkUpAnimation", 4, walkDuration / 5.0f);
-	loadFrameHelper(role + "/walkDown", player + "WalkDownAnimation", 4, walkDuration / 5.0f);
+	loadFrameHelper(role + "/walkUp", player + "WalkUpAnimation", 5, walkDuration / 5.0f);
+	loadFrameHelper(role + "/walkDown", player + "WalkDownAnimation", 5, walkDuration / 5.0f);
 	loadFrameHelper(role + "/walkSideway", player + "WalkSidewayAnimation", 5, walkDuration / 5.0f);
 	loadFrameHelper(role + "/die", player + "DieAnimation", 4, dieDuration / 4.0f);
 	loadFrameHelper(role + "/win", player + "WinAnimation", 3, winDuration / 3.0f);
@@ -366,6 +387,7 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		P2TryMoving = true;
 		KeyArrayPush(P2KeyArray, 4);
 		break;
+	case EventKeyboard::KeyCode::KEY_ENTER:
 	case EventKeyboard::KeyCode::KEY_KP_ENTER:
 		layBomb(player2);
 		break;
@@ -378,8 +400,9 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 
 void HelloWorld::layBomb(Sprite* player)
 {
-	if (player == player1)
+	if (player == player1 && P1BombLaid < P1BombMax)
 	{
+		
 		int posX = P1PositionX;
 		int posY = P1PositionY;
 		if (BombMatrix[posX][posY] != nullptr)
@@ -388,6 +411,7 @@ void HelloWorld::layBomb(Sprite* player)
 		}
 		else
 		{
+			P1BombLaid++;
 			auto bomb = Sprite::create();
 			bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
 			this->addChild(bomb, 0);
@@ -397,7 +421,8 @@ void HelloWorld::layBomb(Sprite* player)
 			{
 				this->BombMatrix[posX][posY] = nullptr;
 				bomb->removeFromParentAndCleanup(true);
-				bombExplode(3.0, bomb->getPosition(), posX, posY);
+				bombExplode(P1BombWavePower, bomb->getPosition(), posX, posY);
+				P1BombLaid--;
 			}),
 				nullptr
 				);
@@ -406,7 +431,7 @@ void HelloWorld::layBomb(Sprite* player)
 			BombMatrix[posX][posY] = bomb;
 		}
 	}
-	else
+	else if (player == player2 && P2BombLaid < P2BombMax)
 	{
 		int posX = P2PositionX;
 		int posY = P2PositionY;
@@ -416,6 +441,7 @@ void HelloWorld::layBomb(Sprite* player)
 		}
 		else
 		{
+			P2BombLaid++;
 			auto bomb = Sprite::create();
 			bomb->setPosition(Vec2(P2PositionX * waveGridSize + P2InitialX, P2PositionY * waveGridSize + P2InitialY));
 			this->addChild(bomb, 0);
@@ -425,7 +451,9 @@ void HelloWorld::layBomb(Sprite* player)
 			{
 				this->BombMatrix[posX][posY] = nullptr;
 				bomb->removeFromParentAndCleanup(true);
-				bombExplode(3.0, bomb->getPosition(), posX, posY);
+				P2BombLaid--;
+				bombExplode(P2BombWavePower, bomb->getPosition(), posX, posY);
+
 			}),
 				nullptr
 				);
@@ -539,13 +567,14 @@ void HelloWorld::movePlayer(Sprite* player) {
 		default:
 			break;
 		}
+		walkAction->setDuration(P1WalkDuration);
 		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0 && checkCanMove(P1PositionX + x, P1PositionY + y))
 		{
 			player1->stopAllActions();
 			P1IsMoving = true;
 			P1PositionX += x;
 			P1PositionY += y;
-			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(walkDuration, Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY)), walkAction);
+			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(P1WalkDuration, Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY)), walkAction);
 			player1->setFlippedX(x == -1);
 			auto ac = Sequence::create(moveAC, CallFunc::create([this]() { if (this->P1TryMoving == true) { this->movePlayer(this->player1); } else { this->P1IsMoving = false; } }), nullptr);
 			player1->runAction(ac);
@@ -588,13 +617,14 @@ void HelloWorld::movePlayer(Sprite* player) {
 		default:
 			break;
 		}
+		walkAction->setDuration(P2WalkDuration);
 		if (P2PositionX + x < 16 && P2PositionX + x >= 0 && P2PositionY + y < 16 && P2PositionY + y >= 0 && checkCanMove(P2PositionX + x, P2PositionY + y))
 		{
 			player2->stopAllActions();
 			P2IsMoving = true;
 			P2PositionX += x;
 			P2PositionY += y;
-			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(walkDuration, Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY)), walkAction);
+			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(P2WalkDuration, Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY)), walkAction);
 			player2->setFlippedX(x == -1);
 			auto ac = Sequence::create(moveAC, CallFunc::create([this]() { if (this->P2TryMoving == true) { this->movePlayer(this->player2); } else { this->P2IsMoving = false; } }), nullptr);
 			player2->runAction(ac);
