@@ -37,7 +37,7 @@ public:
 	bool checkCanMove(int x, int y);
 	bool checkObjectAndRemove(int x, int y);
 
-	void layBomb();
+	void HelloWorld::layBomb(Sprite* player);
 	void flash(Sprite* player);
 private:
 	cocos2d::Sprite* player1;

@@ -57,11 +57,11 @@ void HelloWorld::initalizeParameters()
 	P1PositionX = 1;
 	P1PositionY = 0;
 	P2PositionX = 14;
-	P2PositionY = 14;
+	P2PositionY = 13;
 	P1InitialX = 215;
 	P1InitialY = 20;
-	P2InitialX = 0;
-	P2InitialY = 0;
+	P2InitialX = 215;
+	P2InitialY = 20;
 	P1Dir = 3;
 	P2Dir = 3;
 	// bomb matrix
@@ -77,7 +77,7 @@ void HelloWorld::initalizeParameters()
 void HelloWorld::loadAnimation()
 {
 	loadPlayerAnimationHelper("baobao", "player1");
-
+	loadPlayerAnimationHelper("pidan", "player2");
 	loadWaveAnimationHelper();
 
 }
@@ -180,6 +180,12 @@ void HelloWorld::addSprite()
 	player1 = Sprite::createWithSpriteFrame(frame);
 	player1->setPosition(P1InitialX + P1PositionX * waveGridSize, P1InitialY + P1PositionY * waveGridSize);
 	this->addChild(player1, 1);
+
+	texture = Director::getInstance()->getTextureCache()->addImage("pidan/player.png");
+	frame = SpriteFrame::createWithTexture(texture, CC_RECT_PIXELS_TO_POINTS(Rect(0, 0, texture->getPixelsWide(), texture->getPixelsHigh())));
+	player2 = Sprite::createWithSpriteFrame(frame);
+	player2->setPosition(P2InitialX + P2PositionX * waveGridSize, P2InitialY + P2PositionY * waveGridSize);
+	this->addChild(player2, 1);
 	//for debug
 	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveGeneratingAnimation"));
 	//auto walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("upWaveTailGeneratingAnimation"));
@@ -342,43 +348,93 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		break;
 	case EventKeyboard::KeyCode::KEY_SPACE:
 		// fire
-		layBomb();
+		layBomb(player1);
+		break;
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+		P2TryMoving = true;
+		KeyArrayPush(P2KeyArray, 1);
+		break;
+	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+		P2TryMoving = true;
+		KeyArrayPush(P2KeyArray, 2);
 		break;
 	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
-	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
-	case EventKeyboard::KeyCode::KEY_UP_ARROW:
-	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+		P2TryMoving = true;
+		KeyArrayPush(P2KeyArray, 3);
 		break;
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+		P2TryMoving = true;
+		KeyArrayPush(P2KeyArray, 4);
+		break;
+	case EventKeyboard::KeyCode::KEY_KP_ENTER:
+		layBomb(player2);
+		break;
+	case EventKeyboard::KeyCode::KEY_0:
+		flash(player2);
+		break;
+	
 	}
 }
 
-void HelloWorld::layBomb()
+void HelloWorld::layBomb(Sprite* player)
 {
-	int posX = P1PositionX;
-	int posY = P1PositionY;
-	if (BombMatrix[posX][posY] != nullptr)
+	if (player == player1)
 	{
-		return;
-	}
-	else
-	{
-		auto bomb = Sprite::create();
-		bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
-		this->addChild(bomb, 0);
-		auto bombSequence = Sequence::create(
-			Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
-			CallFunc::create([bomb, posX, posY, this]()
+		int posX = P1PositionX;
+		int posY = P1PositionY;
+		if (BombMatrix[posX][posY] != nullptr)
+		{
+			return;
+		}
+		else
+		{
+			auto bomb = Sprite::create();
+			bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
+			this->addChild(bomb, 0);
+			auto bombSequence = Sequence::create(
+				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
+				CallFunc::create([bomb, posX, posY, this]()
 			{
 				this->BombMatrix[posX][posY] = nullptr;
 				bomb->removeFromParentAndCleanup(true);
 				bombExplode(3.0, bomb->getPosition(), posX, posY);
 			}),
-			nullptr
-			);
+				nullptr
+				);
 
-		bomb->runAction(bombSequence);
-		BombMatrix[posX][posY] = bomb;
+			bomb->runAction(bombSequence);
+			BombMatrix[posX][posY] = bomb;
+		}
 	}
+	else
+	{
+		int posX = P2PositionX;
+		int posY = P2PositionY;
+		if (BombMatrix[posX][posY] != nullptr)
+		{
+			return;
+		}
+		else
+		{
+			auto bomb = Sprite::create();
+			bomb->setPosition(Vec2(P2PositionX * waveGridSize + P2InitialX, P2PositionY * waveGridSize + P2InitialY));
+			this->addChild(bomb, 0);
+			auto bombSequence = Sequence::create(
+				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
+				CallFunc::create([bomb, posX, posY, this]()
+			{
+				this->BombMatrix[posX][posY] = nullptr;
+				bomb->removeFromParentAndCleanup(true);
+				bombExplode(3.0, bomb->getPosition(), posX, posY);
+			}),
+				nullptr
+				);
+
+			bomb->runAction(bombSequence);
+			BombMatrix[posX][posY] = bomb;
+		}
+	}
+	
 }
 
 bool HelloWorld::checkCanMove(int x, int y)
@@ -430,11 +486,22 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 	case EventKeyboard::KeyCode::KEY_CAPITAL_F:
 		flash(player1);
 		break;
-	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
-	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
-	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+		KeyArrayPop(P2KeyArray, 1);
+		P2TryMoving = P2KeyArray[0] != 0;
 		break;
+	case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+		KeyArrayPop(P2KeyArray, 2);
+		P2TryMoving = P2KeyArray[0] != 0;
+		break;
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+		KeyArrayPop(P2KeyArray, 3);
+		P2TryMoving = P2KeyArray[0] != 0;
+		break;
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+		KeyArrayPop(P2KeyArray, 4);
+		P2TryMoving = P2KeyArray[0] != 0;
+		break;	
 	}
 }
 
@@ -452,25 +519,21 @@ void HelloWorld::movePlayer(Sprite* player) {
 		case 1:
 			y = 1;
 			P1Dir = 1;
-			P2Dir = 1;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkUpAnimation"));
 			break;
 		case 2:
 			y = -1;
 			P1Dir = 2;
-			P2Dir = 2;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkDownAnimation"));
 			break;
 		case 3:
 			x = -1;
 			P1Dir = 3;
-			P2Dir = 3;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkSidewayAnimation"));
 			break;
 		case 4:
 			x = 1;
 			P1Dir = 4;
-			P2Dir = 4;
 			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player1WalkSidewayAnimation"));
 			break;
 		default:
@@ -496,7 +559,52 @@ void HelloWorld::movePlayer(Sprite* player) {
 	}
 	else
 	{
-
+		int dir = P2KeyArray[P2KeyArray[0]];
+		int x = 0;
+		int y = 0;
+		Animate* walkAction;
+		switch (dir)
+		{
+		case 1:
+			y = 1;
+			P2Dir = 1;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player2WalkUpAnimation"));
+			break;
+		case 2:
+			y = -1;
+			P2Dir = 2;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player2WalkDownAnimation"));
+			break;
+		case 3:
+			x = -1;
+			P2Dir = 3;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player2WalkSidewayAnimation"));
+			break;
+		case 4:
+			x = 1;
+			P2Dir = 4;
+			walkAction = Animate::create(AnimationCache::getInstance()->getAnimation("player2WalkSidewayAnimation"));
+			break;
+		default:
+			break;
+		}
+		if (P2PositionX + x < 16 && P2PositionX + x >= 0 && P2PositionY + y < 16 && P2PositionY + y >= 0 && checkCanMove(P2PositionX + x, P2PositionY + y))
+		{
+			player2->stopAllActions();
+			P2IsMoving = true;
+			P2PositionX += x;
+			P2PositionY += y;
+			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(walkDuration, Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY)), walkAction);
+			player2->setFlippedX(x == -1);
+			auto ac = Sequence::create(moveAC, CallFunc::create([this]() { if (this->P2TryMoving == true) { this->movePlayer(this->player2); } else { this->P2IsMoving = false; } }), nullptr);
+			player2->runAction(ac);
+		}
+		else
+		{
+			player2->setFlippedX(x == -1);
+			player2->runAction(walkAction);
+			this->P2IsMoving = false;
+		}
 	}
 }
 
@@ -587,5 +695,32 @@ void HelloWorld::flash(Sprite * player)
 	else
 	{
 		P2IsMoving = false;
+		int x = 0;
+		int y = 0;
+		switch (P2Dir)
+		{
+		case 1:
+			y = 2;
+			break;
+		case 2:
+			y = -2;
+			break;
+		case 3:
+			x = -2;
+			break;
+		case 4:
+			x = 2;
+			break;
+		}
+		if (P2PositionX + x < 16 && P2PositionX + x >= 0 && P2PositionY + y < 16 && P2PositionY + y >= 0 && checkCanMove(P2PositionX + x, P2PositionY + y))
+		{
+			P2PositionX += x;
+			P2PositionY += y;
+			player->setPosition(Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY));
+		}
+		else
+		{
+
+		}
 	}
 }
