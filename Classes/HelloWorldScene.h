@@ -78,6 +78,8 @@ private:
 	CCTMXLayer* layer3;
 
 	CCTMXLayer* fortune;
+
+	Layer* UIlayer;
   // implement the "static create()" method manually
   CREATE_FUNC(HelloWorld);
 };

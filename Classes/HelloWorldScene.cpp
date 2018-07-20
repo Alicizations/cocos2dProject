@@ -166,6 +166,11 @@ void HelloWorld::loadMap()
 	layer3 = tmx->layerNamed("pool");
 
 	fortune = tmx->layerNamed("fortune");
+
+	UIlayer = Layer::create();
+	UIlayer->setPosition(0, 0);
+	UIlayer->setAnchorPoint(origin);
+	addChild(UIlayer, 0);
 }
 
 void HelloWorld::addSprite() 
@@ -182,6 +187,31 @@ void HelloWorld::addSprite()
 	//player1->runAction(RepeatForever::create(walkAction));
 	//bombExplode(10, Vec2(visibleSize.width / 2, visibleSize.height / 2));
 
+	auto ui = Sprite::create("ui/UI.jpg");
+	ui->setPosition(Vec2(100, visibleSize.height / 2 + origin.y));
+	ui->setScaleX(200 / ui->getTextureRect().getMaxX());
+	ui->setScaleY(visibleSize.height / ui->getTextureRect().getMaxY());
+	UIlayer->addChild(ui, 0);
+
+	auto box = Sprite::create("ui/box.png");
+	box->setPosition(Vec2(100, visibleSize.height / 2 + origin.y + 100));
+	UIlayer->addChild(box, 1);
+
+	auto player = Sprite::create("baobao/player.png");
+	player->setPosition(Vec2(70, visibleSize.height / 2 + origin.y + 100));
+	player->setScale(1.5);
+	UIlayer->addChild(player, 2);
+
+	auto bomb = Sprite::create("bomb/bomb.png");
+	bomb->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 150));
+	bomb->setScale(0.8);
+	UIlayer->addChild(bomb, 2);
+
+	auto bombNum = Label::createWithTTF("1", "fonts/arial.ttf", 20);
+	bombNum->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 150));
+	bombNum->setColor(Color3B::BLACK);
+	bombNum->enableBold();
+	UIlayer->addChild(bombNum, 2);
 }
 
 
