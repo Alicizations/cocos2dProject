@@ -177,13 +177,13 @@ void HelloWorld::addSprite()
 }
 
 
-void HelloWorld::bombExplode(int wavePower, Vec2 position)
+void HelloWorld::bombExplode(int wavePower, Vec2 position, int posX, int posY)
 {
 
-	ExplosionWaveGenerator("up", 0, 1, wavePower, position);
-	ExplosionWaveGenerator("down", 0, -1, wavePower, position);
-	ExplosionWaveGenerator("left", -1, 0, wavePower, position);
-	ExplosionWaveGenerator("right", 1, 0, wavePower, position);
+	ExplosionWaveGenerator("up", 0, 1, wavePower, position, posX, posY);
+	ExplosionWaveGenerator("down", 0, -1, wavePower, position, posX, posY);
+	ExplosionWaveGenerator("left", -1, 0, wavePower, position, posX, posY);
+	ExplosionWaveGenerator("right", 1, 0, wavePower, position, posX, posY);
 	
 	
 	auto centerWave = Sprite::create();
@@ -204,10 +204,24 @@ void HelloWorld::bombExplode(int wavePower, Vec2 position)
 	centerWave->setScale(1.2f);
 }
 
-void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position)
+void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position, int posX, int posY)
 {
-	for (size_t i = 1; i < wavePower; i++)
+	size_t i;
+	bool flag = false;
+	for ( i = 0; i < wavePower; i++)
 	{
+		if (flag)
+			break;
+		//判断是否有物体
+		if (posX + (i + 1) * offsetX < 0 || posX + (i + 1) * offsetX > 15 || posY + (i + 1) * offsetY < 0 || posY + (i + 1) * offsetY > 15)
+			break;
+		flag = checkObjectAndRemove(posX + (i+1) * offsetX, posY + (i+1) * offsetY);
+		if (!flag && !checkCanMove(posX + (i + 1) * offsetX, posY + (i + 1) * offsetY))
+			break;
+		if (i == 0)
+			continue;
+
+
 		auto wave = Sprite::create();
 		wave->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 		this->addChild(wave, 1);
@@ -224,7 +238,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 		wave->setScale(1.20f);
 	}
 	auto waveTail = Sprite::create();
-	waveTail->setPosition(position.x + wavePower * waveGridSize * offsetX, position.y + wavePower * waveGridSize * offsetY);
+	waveTail->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 	this->addChild(waveTail, 1);
 	auto waveSequence = Sequence::create(Animate::create(AnimationCache::getInstance()->getAnimation(direction + "WaveTailGeneratingAnimation")),
 		DelayTime::create(explosionHoldDuration),
@@ -305,12 +319,14 @@ void HelloWorld::layBomb()
 	auto bomb = Sprite::create();
 	bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
 	this->addChild(bomb, 0);
+	int posX = P1PositionX;
+	int posY = P1PositionY;
 	auto bombSequence = Sequence::create(
 		Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
-		CallFunc::create([bomb, this]()
+		CallFunc::create([bomb, posX, posY, this]()
 		{
 			bomb->removeFromParentAndCleanup(true);
-			bombExplode(3.0, bomb->getPosition());
+			bombExplode(3.0, bomb->getPosition(), posX, posY);
 		}),
 		nullptr
 		);
@@ -320,6 +336,7 @@ void HelloWorld::layBomb()
 
 bool HelloWorld::checkCanMove(int x, int y)
 {
+	y = 15 - y;
 	if (layer1->tileAt(ccp(x, y)))
 	{
 		return false;
@@ -329,6 +346,10 @@ bool HelloWorld::checkCanMove(int x, int y)
 		return false;
 	}
 	else if (layer3->tileAt(ccp(x, y)))
+	{
+		return false;
+	}
+	else if (fortune->tileAt(ccp(x, y)))
 	{
 		return false;
 	}
@@ -408,7 +429,7 @@ void HelloWorld::movePlayer(Sprite* player) {
 		default:
 			break;
 		}
-		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0)
+		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0 && checkCanMove(P1PositionX + x, P1PositionY + y))
 		{
 			player1->stopAllActions();
 			P1IsMoving = true;
@@ -473,6 +494,7 @@ void HelloWorld::KeyArrayPop(int * keyArr, int num)
 }
 bool HelloWorld::checkObjectAndRemove(int x, int y)
 {
+	y = 15 - y;
 	if (fortune->tileAt(ccp(x, y)))
 	{
 		fortune->removeTileAt(ccp(x, y));
@@ -504,7 +526,7 @@ void HelloWorld::flash(Sprite * player)
 			x = 2;
 			break;
 		}
-		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0)
+		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0 && checkCanMove(P1PositionX + x, P1PositionY + y))
 		{
 			P1PositionX += x;
 			P1PositionY += y;

@@ -32,8 +32,8 @@ public:
 	void loadWaveAnimationHelper();
 	void loadFrameHelper(string imagePath, string animationName, int frameNum, float frameDuration);
 	void loadFrameReverselyHelper(string imagePath, string animationName, int frameNum, float frameDuration);
-	void bombExplode(int wavePower, cocos2d::Vec2 position);
-	void ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position);
+	void bombExplode(int wavePower, cocos2d::Vec2 position, int posX, int posY);
+	void ExplosionWaveGenerator(string direction, int offsetX, int offsetY, int wavePower, cocos2d::Vec2 position, int posX,int posY);
 	bool checkCanMove(int x, int y);
 	bool checkObjectAndRemove(int x, int y);
 
