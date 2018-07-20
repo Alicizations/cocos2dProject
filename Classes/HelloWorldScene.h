@@ -77,7 +77,7 @@ private:
 	// skill relative
 
 	// Bomb relative
-	cocos2d::Sprite* BombMatrix[15][15];
+	cocos2d::Sprite* BombMatrix[16][16];
 	int P1BombMax;
 	int P1BombLaid;
 	int P1BombWavePower;
