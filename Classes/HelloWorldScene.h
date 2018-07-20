@@ -39,6 +39,11 @@ public:
 
 	void HelloWorld::layBomb(Sprite* player);
 	void flash(Sprite* player);
+	// bomb explode relative
+	void BombExploding(int BombPositionX, int BombPositionY, int power);
+	void RecoverBombCount(int PlayerTag);
+	int GetBombPowerByTag(int PlayerTag);
+	bool CheckStopBomb(int posX, int posY);
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;

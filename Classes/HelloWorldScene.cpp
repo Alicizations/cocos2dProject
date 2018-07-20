@@ -414,6 +414,7 @@ void HelloWorld::layBomb(Sprite* player)
 			P1BombLaid++;
 			auto bomb = Sprite::create();
 			bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
+			bomb->setTag(11);
 			this->addChild(bomb, 0);
 			auto bombSequence = Sequence::create(
 				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
@@ -422,6 +423,7 @@ void HelloWorld::layBomb(Sprite* player)
 				this->BombMatrix[posX][posY] = nullptr;
 				bomb->removeFromParentAndCleanup(true);
 				bombExplode(P1BombWavePower, bomb->getPosition(), posX, posY);
+				BombExploding(posX, posY, P1BombWavePower);
 				P1BombLaid--;
 			}),
 				nullptr
@@ -444,6 +446,7 @@ void HelloWorld::layBomb(Sprite* player)
 			P2BombLaid++;
 			auto bomb = Sprite::create();
 			bomb->setPosition(Vec2(P2PositionX * waveGridSize + P2InitialX, P2PositionY * waveGridSize + P2InitialY));
+			bomb->setTag(22);
 			this->addChild(bomb, 0);
 			auto bombSequence = Sequence::create(
 				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
@@ -453,7 +456,7 @@ void HelloWorld::layBomb(Sprite* player)
 				bomb->removeFromParentAndCleanup(true);
 				P2BombLaid--;
 				bombExplode(P2BombWavePower, bomb->getPosition(), posX, posY);
-
+				BombExploding(posX, posY, P2BombWavePower);
 			}),
 				nullptr
 				);
@@ -463,6 +466,138 @@ void HelloWorld::layBomb(Sprite* player)
 		}
 	}
 	
+}
+
+void HelloWorld::BombExploding(int BombPositionX, int BombPositionY, int power)
+{
+	if (BombPositionX < 0 || BombPositionX > 15 || BombPositionY < 0 || BombPositionY > 15 || power <= 0)
+	{
+		return;
+	}
+	// check Y+ Y- X- X+
+	for (int i = 1; i <= power; i++)
+	{
+		// Y+
+		if (BombPositionX < 0 || BombPositionX > 15 || BombPositionY + i < 0 || BombPositionY + i > 15)
+		{
+			// do nothing
+		}
+		else
+		{
+			if (CheckStopBomb(BombPositionX, BombPositionY + i) && BombMatrix[BombPositionX][BombPositionY + i] != nullptr)
+			{
+				int ttag = this->BombMatrix[BombPositionX][BombPositionY + i]->getTag();
+				this->BombMatrix[BombPositionX][BombPositionY + i]->stopAllActions();
+				RecoverBombCount(ttag);
+				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX][BombPositionY + i]->getPosition(), BombPositionX, BombPositionY + i);
+				this->BombMatrix[BombPositionX][BombPositionY + i]->removeFromParentAndCleanup(true);
+				this->BombMatrix[BombPositionX][BombPositionY + i] = nullptr;
+				BombExploding(BombPositionX, BombPositionY + i, GetBombPowerByTag(ttag));
+			}
+		}
+		// Y-
+		if (BombPositionX < 0 || BombPositionX > 15 || BombPositionY - i < 0 || BombPositionY - i > 15)
+		{
+			// do nothing
+		}
+		else
+		{
+			if (CheckStopBomb(BombPositionX, BombPositionY - i) && BombMatrix[BombPositionX][BombPositionY - i] != nullptr)
+			{
+				int ttag = this->BombMatrix[BombPositionX][BombPositionY - i]->getTag();
+				this->BombMatrix[BombPositionX][BombPositionY - i]->stopAllActions();
+				RecoverBombCount(ttag);
+				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX][BombPositionY - i]->getPosition(), BombPositionX, BombPositionY - i);
+				this->BombMatrix[BombPositionX][BombPositionY - i]->removeFromParentAndCleanup(true);
+				this->BombMatrix[BombPositionX][BombPositionY - i] = nullptr;
+				BombExploding(BombPositionX, BombPositionY - i, GetBombPowerByTag(ttag));
+			}
+		}
+		// X-
+		if (BombPositionX - i < 0 || BombPositionX - i > 15 || BombPositionY < 0 || BombPositionY > 15)
+		{
+			// do nothing
+		}
+		else
+		{
+			if (CheckStopBomb(BombPositionX - i, BombPositionY) && BombMatrix[BombPositionX - i][BombPositionY] != nullptr)
+			{
+				int ttag = this->BombMatrix[BombPositionX - i][BombPositionY]->getTag();
+				this->BombMatrix[BombPositionX - i][BombPositionY]->stopAllActions();
+				RecoverBombCount(ttag);
+				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX - i][BombPositionY]->getPosition(), BombPositionX - i, BombPositionY);
+				this->BombMatrix[BombPositionX - i][BombPositionY]->removeFromParentAndCleanup(true);
+				this->BombMatrix[BombPositionX - i][BombPositionY] = nullptr;
+				BombExploding(BombPositionX - i, BombPositionY, GetBombPowerByTag(ttag));
+			}
+		}
+		// X+
+		if (BombPositionX + i < 0 || BombPositionX + i > 15 || BombPositionY < 0 || BombPositionY > 15)
+		{
+			// do nothing
+		}
+		else
+		{
+			if (CheckStopBomb(BombPositionX + i, BombPositionY) && BombMatrix[BombPositionX + i][BombPositionY] != nullptr)
+			{
+				int ttag = this->BombMatrix[BombPositionX + i][BombPositionY]->getTag();
+				this->BombMatrix[BombPositionX + i][BombPositionY]->stopAllActions();
+				RecoverBombCount(ttag);
+				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX + i][BombPositionY]->getPosition(), BombPositionX + i, BombPositionY);
+				this->BombMatrix[BombPositionX + i][BombPositionY]->removeFromParentAndCleanup(true);
+				this->BombMatrix[BombPositionX + i][BombPositionY] = nullptr;
+				BombExploding(BombPositionX + i, BombPositionY, GetBombPowerByTag(ttag));
+			}
+		}
+	}
+}
+
+void HelloWorld::RecoverBombCount(int PlayerTag)
+{
+	if (PlayerTag == 11)
+	{
+		P1BombLaid--;
+	}
+	else if (PlayerTag == 22)
+	{
+		P2BombLaid--;
+	}
+}
+
+int HelloWorld::GetBombPowerByTag(int PlayerTag)
+{
+	if (PlayerTag == 11)
+	{
+		return P1BombWavePower;
+	}
+	else if (PlayerTag == 22)
+	{
+		return P2BombWavePower;
+	}
+	return 0;
+}
+
+bool HelloWorld::CheckStopBomb(int posX, int posY)
+{
+	int MapX = posX;
+	int MapY = 15 - posY;
+	if (layer1->tileAt(ccp(MapX, MapY)))
+	{
+		return false;
+	}
+	else if (layer2->tileAt(ccp(MapX, MapY)))
+	{
+		return false;
+	}
+	else if (layer3->tileAt(ccp(MapX, MapY)))
+	{
+		return false;
+	}
+	else if (fortune->tileAt(ccp(MapX, MapY)))
+	{
+		return false;
+	}
+	return true;
 }
 
 bool HelloWorld::checkCanMove(int posX, int posY)
