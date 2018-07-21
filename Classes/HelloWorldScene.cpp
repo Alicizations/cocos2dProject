@@ -119,6 +119,10 @@ void HelloWorld::initalizeParameters()
 	SkillCount = 5;
 	P1SkillIndex = 0;
 	P2SkillIndex = 0;
+	for (int i = 0; i < 5; i++)
+	{
+		P1SkillCDs[i] = P2SkillCDs[i] = 0;
+	}
 }
 
 void HelloWorld::loadAnimation()
@@ -526,6 +530,16 @@ void HelloWorld::addEventListener()
 void HelloWorld::addScheduler()
 {
 	schedule(schedule_selector(HelloWorld::update), 0.05f, kRepeatForever, 0);
+	schedule(schedule_selector(HelloWorld::CountCD), 1.0f, kRepeatForever, 0);
+}
+
+void HelloWorld::CountCD(float f)
+{
+	for (int i = 0; i < 5; i++)
+	{
+		P1SkillCDs[i] = P1SkillCDs[i] > 0 ? P1SkillCDs[i] - 1 : 0;
+		P2SkillCDs[i] = P2SkillCDs[i] > 0 ? P2SkillCDs[i] - 1 : 0;
+	}
 }
 
 void HelloWorld::update(float f)
@@ -1199,15 +1213,25 @@ void HelloWorld::recover(Sprite* player)
 {
 	if (player == player1)
 	{
+		if (P1SkillCDs[1] > 0)
+		{
+			return;
+		}
 		float f = pT1->getPercentage() + 40 > 100 ? 100 : pT1->getPercentage() + 40;
 		auto animate = CCProgressTo::create(0.1, f);
 		pT1->runAction(animate);
+		P1SkillCDs[1] = 30;
 	}
 	else
 	{
+		if (P2SkillCDs[1] > 0)
+		{
+			return;
+		}
 		float f = pT2->getPercentage() + 40 > 100 ? 100 : pT2->getPercentage() + 40;
 		auto animate = CCProgressTo::create(0.1, f);
 		pT2->runAction(animate);
+		P2SkillCDs[1] = 30;
 	}
 }
 
@@ -1215,13 +1239,27 @@ void HelloWorld::BombUp(Sprite* player)
 {
 	if (player == player1)
 	{
+		if (P1SkillCDs[2] > 0)
+		{
+			return;
+		}
 		P1BombMax++;
 		P1bombNum->setString(std::to_string(P1BombMax));
+		P1SkillCDs[2] = 30;
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1BombMax--;P1bombNum->setString(std::to_string(P1BombMax));}), nullptr);
+		this->runAction(ac);
 	}
 	else
 	{
+		if (P2SkillCDs[2] > 0)
+		{
+			return;
+		}
 		P2BombMax++;
 		P2bombNum->setString(std::to_string(P2BombMax));
+		P1SkillCDs[2] = 30;
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombMax--; P2bombNum->setString(std::to_string(P2BombMax)); }), nullptr);
+		this->runAction(ac);
 	}
 }
 
@@ -1229,13 +1267,27 @@ void HelloWorld::PowerUp(Sprite* player)
 {
 	if (player == player1)
 	{
+		if (P1SkillCDs[3] > 0)
+		{
+			return;
+		}
 		P1BombWavePower++;
 		P1power->setString(std::to_string(P1BombWavePower));
+		P1SkillCDs[3] = 30;
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1BombWavePower--; P1power->setString(std::to_string(P1BombWavePower)); }), nullptr);
+		this->runAction(ac);
 	}
 	else
 	{
+		if (P2SkillCDs[3] > 0)
+		{
+			return;
+		}
 		P2BombWavePower++;
 		P2power->setString(std::to_string(P2BombWavePower));
+		P1SkillCDs[3] = 30;
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombWavePower--; P2power->setString(std::to_string(P2BombWavePower)); }), nullptr);
+		this->runAction(ac);
 	}
 }
 
@@ -1243,13 +1295,27 @@ void HelloWorld::SpeedUp(Sprite* player)
 {
 	if (player == player1)
 	{
+		if (P1SkillCDs[4] > 0)
+		{
+			return;
+		}
 		P1Speed++;
 		P1speed->setString(std::to_string((int)P1Speed));
+		P1SkillCDs[4] = 30;
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1Speed--; P1speed->setString(std::to_string((int)P1Speed)); }), nullptr);
+		this->runAction(ac);
 	}
 	else
 	{
+		if (P2SkillCDs[4] > 0)
+		{
+			return;
+		}
 		P2Speed++;
 		P2speed->setString(std::to_string((int)P2Speed));
+		P1SkillCDs[4] = 30;
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2Speed--; P2speed->setString(std::to_string((int)P2Speed)); }), nullptr);
+		this->runAction(ac);
 	}
 }
 
