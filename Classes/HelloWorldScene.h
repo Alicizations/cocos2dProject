@@ -27,6 +27,8 @@ public:
 	void addScheduler();
 	void loadPlayerAnimationHelper(string role, string player);
 
+	void fireGenerator(int layer);//决赛圈
+
 	void update(float f);
 	void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
 	void onKeyReleased(EventKeyboard::KeyCode code, Event* event);
@@ -34,6 +36,8 @@ public:
 	void KeyArrayPush(int* keyArr, int num);
 	void KeyArrayPop(int* keyArr, int num);
 	void loadWaveAnimationHelper();
+	void loadFlashAnimationHelper();
+	void loadFireAnimationHelper();
 	void loadFrameHelper(string imagePath, string animationName, int frameNum, float frameDuration);
 	void loadFrameReverselyHelper(string imagePath, string animationName, int frameNum, float frameDuration);
 	void bombExplode(int wavePower, cocos2d::Vec2 position, int posX, int posY);
@@ -60,6 +64,12 @@ private:
 	float SpeedIncreasingDegree;
 	float MaxSpeed;
 
+	//决赛圈开始缩小时间
+	float fireGeneratingStartTime;
+	//决赛圈缩小时间
+	float fireGeneratingGap;
+	//决赛圈计时器
+	float fireTimeCount;
 
 	float dieDuration;
 	float winDuration;

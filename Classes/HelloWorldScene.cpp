@@ -103,6 +103,12 @@ void HelloWorld::initalizeParameters()
 	SpeedIncreasingDegree = 2;
 	// 最大速度
 	MaxSpeed = 10;
+
+	//决赛圈开始缩小时间
+	fireGeneratingStartTime = 20;
+	//决赛圈缩小间隔
+	fireGeneratingGap = 10;
+	fireTimeCount = 0;
 }
 
 void HelloWorld::loadAnimation()
@@ -110,6 +116,8 @@ void HelloWorld::loadAnimation()
 	loadPlayerAnimationHelper("baobao", "player1");
 	loadPlayerAnimationHelper("pidan", "player2");
 	loadWaveAnimationHelper();
+	loadFlashAnimationHelper();
+	loadFireAnimationHelper();
 
 }
 
@@ -144,6 +152,16 @@ void HelloWorld::loadWaveAnimationHelper()
 	loadFrameReverselyHelper("bomb/leftWaveTail", "leftWaveTailGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameReverselyHelper("bomb/rightWave", "rightWaveGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameReverselyHelper("bomb/rightWaveTail", "rightWaveTailGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
+}
+
+void HelloWorld::loadFlashAnimationHelper()
+{
+	loadFrameHelper("flash/flash", "flashAnimation", 4, 0.15f);
+}
+
+void HelloWorld::loadFireAnimationHelper()
+{
+	loadFrameHelper("fire/fire", "fireAnimation", 3, 1.0f/3.0f);
 }
 
 
@@ -488,7 +506,58 @@ void HelloWorld::update(float f)
 	{
 		this->movePlayer(player2);
 	}
+
+	//决赛圈相关
+	fireTimeCount++;
+	//决赛圈最多4层
+	for (int i = 0; i <= 3; i++)
+	{
+		if (fireTimeCount == (fireGeneratingStartTime + i * fireGeneratingGap) * 20 )
+		{
+			fireGenerator(i);
+		}
+	}
 }
+//决赛圈
+void HelloWorld::fireGenerator(int layer)
+{
+	//upper row
+	for (int i = layer; i <= 15 - layer; i++)
+	{
+		auto fire = Sprite::create();
+		fire->setPosition(Vec2(P1InitialX + waveGridSize * i, P1InitialY + waveGridSize * (15 - layer)));
+		this->addChild(fire, 4);
+		fire->runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->getAnimation("fireAnimation"))));
+	}
+
+	//lower row
+	for (int i = layer; i < 15 - layer; i++)
+	{
+		auto fire = Sprite::create();
+		fire->setPosition(Vec2(P1InitialX + waveGridSize * i, P1InitialY + waveGridSize * layer));
+		this->addChild(fire, 4);
+		fire->runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->getAnimation("fireAnimation"))));
+	}
+
+	//left column
+	for (int i = layer; i < 15 - layer; i++)
+	{
+		auto fire = Sprite::create();
+		fire->setPosition(Vec2(P1InitialX + waveGridSize * layer, P1InitialY + waveGridSize * i));
+		this->addChild(fire, 4);
+		fire->runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->getAnimation("fireAnimation"))));
+	}
+
+	for (int i = layer; i < 15 - layer; i++)
+	{
+		auto fire = Sprite::create();
+		fire->setPosition(Vec2(P1InitialX + waveGridSize * (15 - layer), P1InitialY + waveGridSize * i));
+		this->addChild(fire, 4);
+		fire->runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->getAnimation("fireAnimation"))));
+	}
+}
+
+	
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	switch (code)
@@ -1005,6 +1074,13 @@ void HelloWorld::flash(Sprite * player)
 		}
 		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0 && checkCanMove(P1PositionX + x, P1PositionY + y))
 		{
+			auto flashGleam = Sprite::create();
+			flashGleam->setPosition(Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY));
+			this->addChild(flashGleam, 3);
+			flashGleam->runAction(
+				Sequence::create(Animate::create(AnimationCache::getInstance()->getAnimation("flashAnimation")) ,
+				CallFunc::create([flashGleam, this]() {flashGleam->removeFromParentAndCleanup(true); }),
+				nullptr));
 			P1PositionX += x;
 			P1PositionY += y;
 			checkAndHandleProperty(1);
@@ -1038,10 +1114,18 @@ void HelloWorld::flash(Sprite * player)
 		}
 		if (P2PositionX + x < 16 && P2PositionX + x >= 0 && P2PositionY + y < 16 && P2PositionY + y >= 0 && checkCanMove(P2PositionX + x, P2PositionY + y))
 		{
+			auto flashGleam = Sprite::create();
+			flashGleam->setPosition(Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY));
+			this->addChild(flashGleam, 3);
+			flashGleam->runAction(
+				Sequence::create(Animate::create(AnimationCache::getInstance()->getAnimation("flashAnimation")),
+					CallFunc::create([flashGleam, this]() {flashGleam->removeFromParentAndCleanup(true); }),
+					nullptr));
 			P2PositionX += x;
 			P2PositionY += y;
 			checkAndHandleProperty(2);
 			player->setPosition(Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY));
+			SimpleAudioEngine::getInstance()->playEffect("sound/flash.wav");
 		}
 		else
 		{
