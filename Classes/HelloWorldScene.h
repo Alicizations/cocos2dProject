@@ -66,10 +66,10 @@ private:
 	cocos2d::Sprite* player2;
 	float walkDuration; 
 
-	float P1Speed;
-	float P2Speed;
-	float SpeedIncreasingDegree;
-	float MaxSpeed;
+	int P1Speed;
+	int P2Speed;
+	int SpeedIncreasingDegree;
+	int MaxSpeed;
 
 	//决赛圈开始缩小时间
 	float fireGeneratingStartTime;
