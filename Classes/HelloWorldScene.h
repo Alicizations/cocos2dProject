@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include <string>
 using std::string;
-using std::to_string;
+using std::to_string; 
 USING_NS_CC;
 
 class HelloWorld : public cocos2d::Scene {
