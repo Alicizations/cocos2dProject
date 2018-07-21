@@ -3,7 +3,7 @@
 #include <cmath>
 USING_NS_CC;
 
-
+ 
 #define P1WalkDuration (1.0f / P1Speed)
 #define P2WalkDuration (1.0f / P2Speed)
 
@@ -124,7 +124,7 @@ void HelloWorld::loadPlayerAnimationHelper(string role, string player)
 void HelloWorld::loadWaveAnimationHelper()
 {
 	loadFrameHelper("bomb/bomb", "bombAnimation", 3, 1.0f / 3.0f);
-	loadFrameHelper("bomb/explosion", "explosionVanishAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
+	loadFrameHelper("bomb/centerWave", "centerWaveVanishAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameHelper("bomb/upWave", "upWaveVanishAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameHelper("bomb/upWaveTail", "upWaveTailVanishAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameHelper("bomb/downWave", "downWaveVanishAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
@@ -134,7 +134,7 @@ void HelloWorld::loadWaveAnimationHelper()
 	loadFrameHelper("bomb/rightWave", "rightWaveVanishAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameHelper("bomb/rightWaveTail", "rightWaveTailVanishAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 
-	loadFrameReverselyHelper("bomb/explosion", "explosionGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
+	loadFrameReverselyHelper("bomb/centerWave", "centerWaveGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameReverselyHelper("bomb/upWave", "upWaveGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameReverselyHelper("bomb/upWaveTail", "upWaveTailGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
 	loadFrameReverselyHelper("bomb/downWave", "downWaveGeneratingAnimation", 4, (explosionDuration - explosionHoldDuration) / (2 * 4.0f));
@@ -265,9 +265,9 @@ void HelloWorld::bombExplode(int wavePower, Vec2 position, int posX, int posY)
 	this->addChild(centerWave, 1);
 	
 	auto centerSequence = Sequence::create(
-		Animate::create(AnimationCache::getInstance()->getAnimation("upWaveGeneratingAnimation")),
+		Animate::create(AnimationCache::getInstance()->getAnimation("centerWaveGeneratingAnimation")),
 		DelayTime::create(explosionHoldDuration),
-		Animate::create(AnimationCache::getInstance()->getAnimation("upWaveVanishAnimation")),
+		Animate::create(AnimationCache::getInstance()->getAnimation("centerWaveVanishAnimation")),
 		CallFunc::create([centerWave, this]()
 		{
 			centerWave->removeFromParentAndCleanup(true);
