@@ -114,6 +114,11 @@ void HelloWorld::initalizeParameters()
 	//决赛圈缩小间隔
 	fireGeneratingGap = 10;
 	fireTimeCount = 0;
+
+	// skill relative
+	SkillCount = 5;
+	P1SkillIndex = 0;
+	P2SkillIndex = 0;
 }
 
 void HelloWorld::loadAnimation()
@@ -613,6 +618,14 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		// fire
 		layBomb(player1);
 		break;
+	case EventKeyboard::KeyCode::KEY_F:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_F:
+		UseSkill(player1, P1SkillIndex);
+		break;
+	case EventKeyboard::KeyCode::KEY_R:
+	case EventKeyboard::KeyCode::KEY_CAPITAL_R:
+		P1SkillIndex = (P1SkillIndex + 1) % SkillCount;
+		break;
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
 		P2TryMoving = true;
 		KeyArrayPush(P2KeyArray, 1);
@@ -634,9 +647,11 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		layBomb(player2);
 		break;
 	case EventKeyboard::KeyCode::KEY_0:
-		flash(player2);
+		UseSkill(player2, P2SkillIndex);
 		break;
-	
+	case EventKeyboard::KeyCode::KEY_2:
+		P2SkillIndex = (P2SkillIndex + 1) % SkillCount;
+		break;
 	}
 }
 
@@ -898,10 +913,6 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 		KeyArrayPop(P1KeyArray, 4);
 		P1TryMoving = P1KeyArray[0] != 0;
 		break;
-	case EventKeyboard::KeyCode::KEY_F:
-	case EventKeyboard::KeyCode::KEY_CAPITAL_F:
-		flash(player1);
-		break;
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
 		KeyArrayPop(P2KeyArray, 1);
 		P2TryMoving = P2KeyArray[0] != 0;
@@ -918,6 +929,29 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode code, Event* event) {
 		KeyArrayPop(P2KeyArray, 4);
 		P2TryMoving = P2KeyArray[0] != 0;
 		break;	
+	}
+}
+
+void HelloWorld::UseSkill(Sprite* player, int SkillIndex)
+{
+	switch (SkillIndex){
+	case 0:
+		flash(player);
+		break;
+	case 1:
+		recover(player);
+		break;
+	case 2:
+		BombUp(player);
+		break;
+	case 3:
+		PowerUp(player);
+		break;
+	case 4:
+		SpeedUp(player);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -1158,6 +1192,64 @@ void HelloWorld::flash(Sprite * player)
 		{
 
 		}
+	}
+}
+
+void HelloWorld::recover(Sprite* player)
+{
+	if (player == player1)
+	{
+		float f = pT1->getPercentage() + 40 > 100 ? 100 : pT1->getPercentage() + 40;
+		auto animate = CCProgressTo::create(0.1, f);
+		pT1->runAction(animate);
+	}
+	else
+	{
+		float f = pT2->getPercentage() + 40 > 100 ? 100 : pT2->getPercentage() + 40;
+		auto animate = CCProgressTo::create(0.1, f);
+		pT2->runAction(animate);
+	}
+}
+
+void HelloWorld::BombUp(Sprite* player)
+{
+	if (player == player1)
+	{
+		P1BombMax++;
+		P1bombNum->setString(std::to_string(P1BombMax));
+	}
+	else
+	{
+		P2BombMax++;
+		P2bombNum->setString(std::to_string(P2BombMax));
+	}
+}
+
+void HelloWorld::PowerUp(Sprite* player) 
+{
+	if (player == player1)
+	{
+		P1BombWavePower++;
+		P1power->setString(std::to_string(P1BombWavePower));
+	}
+	else
+	{
+		P2BombWavePower++;
+		P2power->setString(std::to_string(P2BombWavePower));
+	}
+}
+
+void HelloWorld::SpeedUp(Sprite* player)
+{
+	if (player == player1)
+	{
+		P1Speed++;
+		P1speed->setString(std::to_string((int)P1Speed));
+	}
+	else
+	{
+		P2Speed++;
+		P2speed->setString(std::to_string((int)P2Speed));
 	}
 }
 

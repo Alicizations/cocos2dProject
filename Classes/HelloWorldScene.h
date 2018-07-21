@@ -46,7 +46,13 @@ public:
 	bool checkObjectAndRemove(int x, int y);
 
 	void HelloWorld::layBomb(Sprite* player);
+	// skill relative
+	void UseSkill(Sprite* player, int SkillIndex);
 	void flash(Sprite* player);
+	void recover(Sprite* player);
+	void BombUp(Sprite* player);
+	void PowerUp(Sprite* player);
+	void SpeedUp(Sprite* player);
 	// bomb explode relative
 	void BombExploding(int BombPositionX, int BombPositionY, int power);
 	void RecoverBombCount(int PlayerTag);
@@ -101,7 +107,11 @@ private:
 	int P2InitialY;
 	int P2Dir;
 	// skill relative
-
+	// 0 flash, 1 recover, 2 bomb, 3 power, 4 speed
+	int P1SkillIndex;
+	int P2SkillIndex;
+	// number of skills
+	int SkillCount;
 	// Bomb relative
 	cocos2d::Sprite* BombMatrix[16][16];
 	int P1BombMax;
