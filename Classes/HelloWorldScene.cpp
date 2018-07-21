@@ -303,7 +303,7 @@ void HelloWorld::addSprite()
 	speed1->setScale(0.8);
 	UIlayer->addChild(speed1, 2);
 
-	P1speed = Label::createWithTTF("2", "fonts/arial.ttf", 20);
+	P1speed = Label::createWithTTF(std::to_string(P1Speed), "fonts/arial.ttf", 20);
 	P1speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 80));
 	P1speed->setColor(Color3B::BLACK);
 	P1speed->enableBold();
@@ -345,7 +345,7 @@ void HelloWorld::addSprite()
 	speed2->setScale(0.8);
 	UIlayer->addChild(speed2, 2);
 
-	P2speed = Label::createWithTTF("2", "fonts/arial.ttf", 20);
+	P2speed = Label::createWithTTF(std::to_string(P2Speed), "fonts/arial.ttf", 20);
 	P2speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 70));
 	P2speed->setColor(Color3B::BLACK);
 	P2speed->enableBold();
@@ -1179,23 +1179,18 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			{
 				if (P1BombWavePower < 10)
 					P1BombWavePower++;
-				int temp = std::round(P1BombWavePower);
-				string str = "1";
-				str[0] = temp + 48;
-				P1power->setString(str);
+				P1power->setString(std::to_string(P1BombWavePower));
 			}
 			else if (pro->getTag() == 3)
 			{
 				if(P1Speed < 10)
 					P1Speed++;
-				int temp = std::round(P1Speed);
-				string str = "1";
-				str[0] = temp + 48;
-				P1speed->setString(str);
+				P1speed->setString(std::to_string(P1Speed));
 			}
 			else if (pro->getTag() == 4)
 			{
 				P1BombMax++;
+				P1bombNum->setString(std::to_string(P1BombMax - P1BombLaid));
 			}
 			pro->removeFromParentAndCleanup(true);
 			PropertyMatrix[P1PositionX][P1PositionY] = nullptr;
@@ -1216,23 +1211,18 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			{
 				if (P2BombWavePower < 10)
 					P2BombWavePower++;
-				int temp = std::round(P2BombWavePower);
-				string str = "1";
-				str[0] = temp + 48;
-				P2power->setString(str);
+				P2power->setString(std::to_string(P2BombWavePower));
 			}
 			else if (pro->getTag() == 3)
 			{
 				if (P2Speed < 10)
 					P2Speed++;
-				int temp = std::round(P2Speed);
-				string str = "1";
-				str[0] = temp + 48;
-				P2speed->setString(str);
+				P2speed->setString(std::to_string(P2Speed));
 			}
 			else if (pro->getTag() == 4)
 			{
 				P2BombMax++;
+				P2bombNum->setString(std::to_string(P2BombMax - P2BombLaid));
 			}
 			pro->removeFromParentAndCleanup(true);
 			PropertyMatrix[P2PositionX][P2PositionY] = nullptr;
