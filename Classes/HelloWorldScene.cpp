@@ -1,6 +1,7 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 #include <cmath>
+#include <string>
 USING_NS_CC;
 
  
@@ -50,6 +51,10 @@ void HelloWorld::initalizeParameters()
 	waveGridSize = 37.5;
 	explosionDuration = 1.0f;
 	explosionHoldDuration = 0.5f;
+
+	absoluteDefenseTime = 1.5f;
+	P1absoluteDefense = false;
+	P2absoluteDefense = false;
 	// move relative
 	P1TryMoving = false;
 	P1IsMoving = false;
@@ -86,7 +91,7 @@ void HelloWorld::initalizeParameters()
 		}
 	}
 	// 最大放置数量
-	P1BombMax = 10;
+	P1BombMax = 1;
 	// 目前放置的数量
 	P1BombLaid = 0;
 	// 炸弹威力
@@ -265,7 +270,7 @@ void HelloWorld::addSprite()
 	speed1->setScale(0.8);
 	UIlayer->addChild(speed1, 2);
 
-	P1speed = Label::createWithTTF("1", "fonts/arial.ttf", 20);
+	P1speed = Label::createWithTTF("2", "fonts/arial.ttf", 20);
 	P1speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 80));
 	P1speed->setColor(Color3B::BLACK);
 	P1speed->enableBold();
@@ -307,7 +312,7 @@ void HelloWorld::addSprite()
 	speed2->setScale(0.8);
 	UIlayer->addChild(speed2, 2);
 
-	P2speed = Label::createWithTTF("1", "fonts/arial.ttf", 20);
+	P2speed = Label::createWithTTF("2", "fonts/arial.ttf", 20);
 	P2speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 70));
 	P2speed->setColor(Color3B::BLACK);
 	P2speed->enableBold();
@@ -357,6 +362,7 @@ void HelloWorld::bombExplode(int wavePower, Vec2 position, int posX, int posY)
 	ExplosionWaveGenerator("left", -1, 0, wavePower, position, posX, posY);
 	ExplosionWaveGenerator("right", 1, 0, wavePower, position, posX, posY);
 	
+	checkAndChangeBlood(posX, posY);
 	
 	auto centerWave = Sprite::create();
 	centerWave->setPosition(position.x + wavePower * waveGridSize * 0, position.y + wavePower * waveGridSize * 0);
@@ -393,6 +399,9 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 		if (i == 0)
 			continue;
 
+		//判断角色是否处于爆炸范围内
+		checkAndChangeBlood(posX + i * offsetX, posY + i * offsetY);
+
 		auto wave = Sprite::create();
 		wave->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 		this->addChild(wave, 1);
@@ -408,6 +417,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 		wave->runAction(waveSequence);
 		wave->setScale(1.20f);
 	}
+	checkAndChangeBlood(posX + i * offsetX, posY + i * offsetY);
 
 	auto waveTail = Sprite::create();
 	waveTail->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
@@ -416,10 +426,11 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 		DelayTime::create(explosionHoldDuration),
 		CallFunc::create([i, flag, position, offsetX, offsetY, posX, posY, this]()
 		{
+			checkAndChangeBlood(posX + i * offsetX, posY + i * offsetY);
 			if (flag)
 			{
 				int randomNumber = rand() % 100;
-				if (randomNumber <= 30)
+				if (randomNumber <= 9)
 				{
 					auto pro = Sprite::create("res/item_25.png");
 					this->PropertyMatrix[posX + i * offsetX][posY + i * offsetY] = pro;
@@ -427,12 +438,28 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 					pro->setTag(1);
 					this->addChild(pro, 0);
 				}
-				else if (randomNumber <= 60)
+				else if (randomNumber <= 26)
 				{
-					auto pro = Sprite::create("res/item_24.png");
+					auto pro = Sprite::create("res/power.png");
 					this->PropertyMatrix[posX + i * offsetX][posY + i * offsetY] = pro;
 					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 					pro->setTag(2);
+					this->addChild(pro, 0);
+				}
+				else if (randomNumber <= 43)
+				{
+					auto pro = Sprite::create("res/speed.png");
+					this->PropertyMatrix[posX + i * offsetX][posY + i * offsetY] = pro;
+					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
+					pro->setTag(3);
+					this->addChild(pro, 0);
+				}
+				else if (randomNumber <= 60)
+				{
+					auto pro = Sprite::create("res/item_61.png");
+					this->PropertyMatrix[posX + i * offsetX][posY + i * offsetY] = pro;
+					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
+					pro->setTag(4);
 					this->addChild(pro, 0);
 				}
 			}
@@ -1041,11 +1068,30 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			auto pro = PropertyMatrix[P1PositionX][P1PositionY];
 			if (pro->getTag() == 1)
 			{
-				player1->setScale(1.1);
+				auto animate = CCProgressTo::create(0.1, pT1->getPercentage() + 10);
+				pT1->runAction(animate);
 			}
 			else if (pro->getTag() == 2)
 			{
-				player1->setScale(0.9);
+				if (P1BombWavePower < 10)
+					P1BombWavePower++;
+				int temp = std::round(P1BombWavePower);
+				string str = "1";
+				str[0] = temp + 48;
+				P1power->setString(str);
+			}
+			else if (pro->getTag() == 3)
+			{
+				if(P1Speed < 10)
+					P1Speed++;
+				int temp = std::round(P1Speed);
+				string str = "1";
+				str[0] = temp + 48;
+				P1speed->setString(str);
+			}
+			else if (pro->getTag() == 4)
+			{
+				P1BombMax++;
 			}
 			pro->removeFromParentAndCleanup(true);
 			PropertyMatrix[P1PositionX][P1PositionY] = nullptr;
@@ -1058,13 +1104,61 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			auto pro = PropertyMatrix[P2PositionX][P2PositionY];
 			if (pro->getTag() == 1)
 			{
+				auto animate = CCProgressTo::create(0.1, pT2->getPercentage() + 10);
+				pT2->runAction(animate);
 			}
 			else if (pro->getTag() == 2)
 			{
-
+				if (P2BombWavePower < 10)
+					P2BombWavePower++;
+				int temp = std::round(P2BombWavePower);
+				string str = "1";
+				str[0] = temp + 48;
+				P2power->setString(str);
+			}
+			else if (pro->getTag() == 3)
+			{
+				if (P2Speed < 10)
+					P2Speed++;
+				int temp = std::round(P2Speed);
+				string str = "1";
+				str[0] = temp + 48;
+				P2speed->setString(str);
+			}
+			else if (pro->getTag() == 4)
+			{
+				P2BombMax++;
 			}
 			pro->removeFromParentAndCleanup(true);
 			PropertyMatrix[P2PositionX][P2PositionY] = nullptr;
 		}
+	}
+}
+
+void HelloWorld::checkAndChangeBlood(int posX, int posY)
+{
+	if (posX == P1PositionX && posY== P1PositionY && !P1absoluteDefense)
+	{
+		this->P1absoluteDefense = true;
+		auto bloodSequence = Sequence::create(CCProgressTo::create(absoluteDefenseTime, pT1->getPercentage() - 20),
+			CallFunc::create([this]()
+		{
+			this->P1absoluteDefense = false;
+		}),
+			nullptr
+		);
+		pT1->runAction(bloodSequence);
+	}
+	if (posX == P2PositionX && posY  == P2PositionY && !P2absoluteDefense)
+	{
+		this->P2absoluteDefense = true;
+		auto bloodSequence = Sequence::create(CCProgressTo::create(absoluteDefenseTime, pT2->getPercentage() - 20),
+			CallFunc::create([this]()
+		{
+			this->P2absoluteDefense = false;
+		}),
+			nullptr
+		);
+		pT2->runAction(bloodSequence);
 	}
 }
