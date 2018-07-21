@@ -2,10 +2,12 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
 #include <string>
 using std::string;
 using std::to_string; 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 class HelloWorld : public cocos2d::Scene {
 public:
@@ -18,6 +20,8 @@ public:
 	void initalizeParameters();
 	void loadAnimation();
 	void loadMap();
+	void loadSound();
+	void playBGM();
 	void addSprite();
 	void addEventListener();
 	void addScheduler();

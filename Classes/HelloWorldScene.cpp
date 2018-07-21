@@ -35,6 +35,7 @@ bool HelloWorld::init()
 	initalizeParameters();
 	loadAnimation();
 	loadMap();
+	playBGM();
 	addSprite();
 	addEventListener();
 	addScheduler();
@@ -175,7 +176,21 @@ void HelloWorld::loadFrameReverselyHelper(string imagePath, string animationName
 	AnimationCache::getInstance()->addAnimation(Animation, animationName);
 }
 
+void HelloWorld::loadSound()
+{
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/lay.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/explode.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/flash.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/get.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/die.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/win.wav");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("sound/bg.wav");
+}
 
+void HelloWorld::playBGM()
+{
+	SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/bg.wav", true);
+}
 
 void HelloWorld::loadMap()
 {
@@ -361,7 +376,8 @@ void HelloWorld::bombExplode(int wavePower, Vec2 position, int posX, int posY)
 	auto centerWave = Sprite::create();
 	centerWave->setPosition(position.x + wavePower * waveGridSize * 0, position.y + wavePower * waveGridSize * 0);
 	this->addChild(centerWave, 1);
-	
+
+	SimpleAudioEngine::getInstance()->playEffect("sound/explode.wav");
 	auto centerSequence = Sequence::create(
 		Animate::create(AnimationCache::getInstance()->getAnimation("centerWaveGeneratingAnimation")),
 		DelayTime::create(explosionHoldDuration),
@@ -544,6 +560,7 @@ void HelloWorld::layBomb(Sprite* player)
 			P1BombLaid++;
 			P1bombNum->setString(std::to_string(P1BombMax - P1BombLaid));
 			auto bomb = Sprite::create();
+			SimpleAudioEngine::getInstance()->playEffect("sound/lay.wav");
 			bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
 			bomb->setTag(11);
 			this->addChild(bomb, 0);
@@ -578,6 +595,7 @@ void HelloWorld::layBomb(Sprite* player)
 			P2BombLaid++;
 			P2bombNum->setString(std::to_string(P2BombMax - P2BombLaid));
 			auto bomb = Sprite::create();
+			SimpleAudioEngine::getInstance()->playEffect("sound/lay.wav");
 			bomb->setPosition(Vec2(P2PositionX * waveGridSize + P2InitialX, P2PositionY * waveGridSize + P2InitialY));
 			bomb->setTag(22);
 			this->addChild(bomb, 0);
@@ -991,6 +1009,7 @@ void HelloWorld::flash(Sprite * player)
 			P1PositionY += y;
 			checkAndHandleProperty(1);
 			player->setPosition(Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY));
+			SimpleAudioEngine::getInstance()->playEffect("sound/flash.wav");
 		}
 		else
 		{
@@ -1038,6 +1057,7 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 	{
 		if (PropertyMatrix[P1PositionX][P1PositionY] != nullptr)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/get.wav");
 			auto pro = PropertyMatrix[P1PositionX][P1PositionY];
 			if (pro->getTag() == 1)
 			{
@@ -1055,6 +1075,7 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 	{
 		if (PropertyMatrix[P2PositionX][P2PositionY] != nullptr)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/get.wav");
 			auto pro = PropertyMatrix[P2PositionX][P2PositionY];
 			if (pro->getTag() == 1)
 			{
