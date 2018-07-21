@@ -54,6 +54,7 @@ public:
 	bool CheckStopBomb(int posX, int posY);
 
 	void checkAndHandleProperty(int playerID);
+	void checkAndChangeBlood(int posX, int posY);
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;
@@ -76,6 +77,10 @@ private:
 	float explosionHoldDuration;
 	float waveGridSize;
 	float explosionDuration;
+
+	bool P1absoluteDefense;
+	bool P2absoluteDefense;
+	float absoluteDefenseTime;
 	cocos2d::Size visibleSize;
 	cocos2d::Vec2 origin;
 	// move relative
