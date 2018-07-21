@@ -1,5 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
+#include <cmath>
 USING_NS_CC;
 
 
@@ -68,6 +69,14 @@ void HelloWorld::initalizeParameters()
 	P2InitialY = 20;
 	P1Dir = 3;
 	P2Dir = 3;
+	//  property matrix
+	for (int i = 0; i < 16; i++)
+	{
+		for (int j = 0; j < 16; j++)
+		{
+			PropertyMatrix[i][j] = nullptr;
+		}
+	}
 	// bomb matrix
 	for (int i = 0; i < 16; i++)
 	{
@@ -275,9 +284,9 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 	bool flag = false;
 	for ( i = 0; i < wavePower; i++)
 	{
+		//判断是否有物体
 		if (flag)
 			break;
-		//判断是否有物体
 		if (posX + (i + 1) * offsetX < 0 || posX + (i + 1) * offsetX > 15 || posY + (i + 1) * offsetY < 0 || posY + (i + 1) * offsetY > 15)
 			break;
 		flag = checkObjectAndRemove(posX + (i+1) * offsetX, posY + (i+1) * offsetY);
@@ -285,7 +294,6 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 			break;
 		if (i == 0)
 			continue;
-
 
 		auto wave = Sprite::create();
 		wave->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
@@ -302,11 +310,35 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 		wave->runAction(waveSequence);
 		wave->setScale(1.20f);
 	}
+
 	auto waveTail = Sprite::create();
 	waveTail->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 	this->addChild(waveTail, 1);
 	auto waveSequence = Sequence::create(Animate::create(AnimationCache::getInstance()->getAnimation(direction + "WaveTailGeneratingAnimation")),
 		DelayTime::create(explosionHoldDuration),
+		CallFunc::create([i, flag, position, offsetX, offsetY, posX, posY, this]()
+		{
+			if (flag)
+			{
+				int randomNumber = rand() % 100;
+				if (randomNumber <= 30)
+				{
+					auto pro = Sprite::create("res/item_25.png");
+					this->PropertyMatrix[posX + i * offsetX][posY + i * offsetY] = pro;
+					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
+					pro->setTag(1);
+					this->addChild(pro, 0);
+				}
+				else if (randomNumber <= 60)
+				{
+					auto pro = Sprite::create("res/item_24.png");
+					this->PropertyMatrix[posX + i * offsetX][posY + i * offsetY] = pro;
+					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
+					pro->setTag(2);
+					this->addChild(pro, 0);
+				}
+			}
+		}),
 		Animate::create(AnimationCache::getInstance()->getAnimation(direction + "WaveTailVanishAnimation")),
 		CallFunc::create([waveTail, this]()
 		{
@@ -716,7 +748,7 @@ void HelloWorld::movePlayer(Sprite* player) {
 			P1PositionY += y;
 			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(P1WalkDuration, Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY)), walkAction);
 			player1->setFlippedX(x == -1);
-			auto ac = Sequence::create(moveAC, CallFunc::create([this]() { if (this->P1TryMoving == true) { this->movePlayer(this->player1); } else { this->P1IsMoving = false; } }), nullptr);
+			auto ac = Sequence::create(moveAC, CallFunc::create([this]() {checkAndHandleProperty(1); if (this->P1TryMoving == true) { this->movePlayer(this->player1); } else { this->P1IsMoving = false; } }), nullptr);
 			player1->runAction(ac);
 		}
 		else
@@ -766,7 +798,7 @@ void HelloWorld::movePlayer(Sprite* player) {
 			P2PositionY += y;
 			auto moveAC = Spawn::createWithTwoActions(MoveTo::create(P2WalkDuration, Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY)), walkAction);
 			player2->setFlippedX(x == -1);
-			auto ac = Sequence::create(moveAC, CallFunc::create([this]() { if (this->P2TryMoving == true) { this->movePlayer(this->player2); } else { this->P2IsMoving = false; } }), nullptr);
+			auto ac = Sequence::create(moveAC, CallFunc::create([this]() {checkAndHandleProperty(2); if (this->P2TryMoving == true) { this->movePlayer(this->player2); } else { this->P2IsMoving = false; } }), nullptr);
 			player2->runAction(ac);
 		}
 		else
@@ -855,6 +887,7 @@ void HelloWorld::flash(Sprite * player)
 		{
 			P1PositionX += x;
 			P1PositionY += y;
+			checkAndHandleProperty(1);
 			player->setPosition(Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY));
 		}
 		else
@@ -886,11 +919,50 @@ void HelloWorld::flash(Sprite * player)
 		{
 			P2PositionX += x;
 			P2PositionY += y;
+			checkAndHandleProperty(2);
 			player->setPosition(Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY));
 		}
 		else
 		{
 
+		}
+	}
+}
+
+void HelloWorld::checkAndHandleProperty(int playerID)
+{
+	int i;
+	if (playerID == 1)
+	{
+		if (PropertyMatrix[P1PositionX][P1PositionY] != nullptr)
+		{
+			auto pro = PropertyMatrix[P1PositionX][P1PositionY];
+			if (pro->getTag() == 1)
+			{
+				player1->setScale(1.1);
+			}
+			else if (pro->getTag() == 2)
+			{
+				player1->setScale(0.9);
+			}
+			pro->removeFromParentAndCleanup(true);
+			PropertyMatrix[P1PositionX][P1PositionY] = nullptr;
+		}
+	}
+	else
+	{
+		if (PropertyMatrix[P2PositionX][P2PositionY] != nullptr)
+		{
+			auto pro = PropertyMatrix[P2PositionX][P2PositionY];
+			if (pro->getTag() == 1)
+			{
+			}
+			else if (pro->getTag() == 2)
+			{
+
+			}
+			pro->removeFromParentAndCleanup(true);
+			PropertyMatrix[P2PositionX][P2PositionY] = nullptr;
 		}
 	}
 }

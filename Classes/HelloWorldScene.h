@@ -44,6 +44,8 @@ public:
 	void RecoverBombCount(int PlayerTag);
 	int GetBombPowerByTag(int PlayerTag);
 	bool CheckStopBomb(int posX, int posY);
+
+	void checkAndHandleProperty(int playerID);
 private:
 	cocos2d::Sprite* player1;
 	cocos2d::Sprite* player2;
@@ -90,7 +92,7 @@ private:
 	int P2BombLaid;
 	int P2BombWavePower;
 	
-	
+	cocos2d::Sprite* PropertyMatrix[16][16];
 
 	CCTMXLayer* layer1;
 	CCTMXLayer* layer2;
