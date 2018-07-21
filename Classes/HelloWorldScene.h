@@ -101,6 +101,15 @@ private:
 	CCTMXLayer* fortune;
 
 	Layer* UIlayer;
+	Label* P1bombNum;
+	Label* P2bombNum;
+	Label* P1power;
+	Label* P2power;
+	Label* P1speed;
+	Label* P2speed;
+	cocos2d::ProgressTimer* pT1;
+	cocos2d::ProgressTimer* pT2;
+
   // implement the "static create()" method manually
   CREATE_FUNC(HelloWorld);
 };

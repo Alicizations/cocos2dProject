@@ -229,25 +229,123 @@ void HelloWorld::addSprite()
 	ui->setScaleY(visibleSize.height / ui->getTextureRect().getMaxY());
 	UIlayer->addChild(ui, 0);
 
-	auto box = Sprite::create("ui/box.png");
-	box->setPosition(Vec2(100, visibleSize.height / 2 + origin.y + 100));
-	UIlayer->addChild(box, 1);
+	auto box1 = Sprite::create("ui/box.png");
+	box1->setPosition(Vec2(100, visibleSize.height / 2 + origin.y + 100));
+	UIlayer->addChild(box1, 1);
 
-	auto player = Sprite::create("baobao/player.png");
-	player->setPosition(Vec2(70, visibleSize.height / 2 + origin.y + 100));
-	player->setScale(1.5);
-	UIlayer->addChild(player, 2);
+	auto player1 = Sprite::create("baobao/player.png");
+	player1->setPosition(Vec2(70, visibleSize.height / 2 + origin.y + 100));
+	player1->setScale(1.5);
+	UIlayer->addChild(player1, 2);
 
-	auto bomb = Sprite::create("bomb/bomb.png");
-	bomb->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 150));
-	bomb->setScale(0.8);
-	UIlayer->addChild(bomb, 2);
+	auto bomb1 = Sprite::create("bomb/bomb.png");
+	bomb1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 140));
+	bomb1->setScale(0.8);
+	UIlayer->addChild(bomb1, 2);
 
-	auto bombNum = Label::createWithTTF("1", "fonts/arial.ttf", 20);
-	bombNum->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 150));
-	bombNum->setColor(Color3B::BLACK);
-	bombNum->enableBold();
-	UIlayer->addChild(bombNum, 2);
+	P1bombNum = Label::createWithTTF(std::to_string(P1BombMax - P1BombLaid), "fonts/arial.ttf", 20);
+	P1bombNum->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 140));
+	P1bombNum->setColor(Color3B::BLACK);
+	P1bombNum->enableBold();
+	UIlayer->addChild(P1bombNum, 2);
+
+	auto power1 = Sprite::create("ui/power.png");
+	power1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 110));
+	power1->setScale(0.8);
+	UIlayer->addChild(power1, 2);
+
+	P1power = Label::createWithTTF(std::to_string(P1BombWavePower), "fonts/arial.ttf", 20);
+	P1power->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 110));
+	P1power->setColor(Color3B::BLACK);
+	P1power->enableBold();
+	UIlayer->addChild(P1power, 2);
+
+	auto speed1 = Sprite::create("ui/speed.png");
+	speed1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 80));
+	speed1->setScale(0.8);
+	UIlayer->addChild(speed1, 2);
+
+	P1speed = Label::createWithTTF("1", "fonts/arial.ttf", 20);
+	P1speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 80));
+	P1speed->setColor(Color3B::BLACK);
+	P1speed->enableBold();
+	UIlayer->addChild(P1speed, 2);
+
+	auto box2 = Sprite::create("ui/box.png");
+	box2->setPosition(Vec2(100, visibleSize.height / 2 + origin.y -50));
+	UIlayer->addChild(box2, 1);
+
+	auto player2 = Sprite::create("pidan/player.png");
+	player2->setPosition(Vec2(70, visibleSize.height / 2 + origin.y -50));
+	player2->setScale(1.5);
+	UIlayer->addChild(player2, 2);
+
+	auto bomb2 = Sprite::create("bomb/bomb.png");
+	bomb2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 10));
+	bomb2->setScale(0.8);
+	UIlayer->addChild(bomb2, 2);
+
+	P2bombNum = Label::createWithTTF(std::to_string(P2BombMax - P2BombLaid), "fonts/arial.ttf", 20);
+	P2bombNum->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 10));
+	P2bombNum->setColor(Color3B::BLACK);
+	P2bombNum->enableBold();
+	UIlayer->addChild(P2bombNum, 2);
+
+	auto power2 = Sprite::create("ui/power.png");
+	power2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 40));
+	power2->setScale(0.8);
+	UIlayer->addChild(power2, 2);
+
+	P2power = Label::createWithTTF(std::to_string(P2BombWavePower), "fonts/arial.ttf", 20);
+	P2power->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 40));
+	P2power->setColor(Color3B::BLACK);
+	P2power->enableBold();
+	UIlayer->addChild(P2power, 2);
+
+	auto speed2 = Sprite::create("ui/speed.png");
+	speed2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 70));
+	speed2->setScale(0.8);
+	UIlayer->addChild(speed2, 2);
+
+	P2speed = Label::createWithTTF("1", "fonts/arial.ttf", 20);
+	P2speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 70));
+	P2speed->setColor(Color3B::BLACK);
+	P2speed->enableBold();
+	UIlayer->addChild(P2speed, 2);
+
+	Sprite* sp0 = Sprite::create("ui/hp.png", CC_RECT_PIXELS_TO_POINTS(Rect(0, 320, 420, 47)));
+	Sprite* sp1 = Sprite::create("ui/hp.png", CC_RECT_PIXELS_TO_POINTS(Rect(0, 320, 420, 47)));
+	Sprite* sp = Sprite::create("ui/hp.png", CC_RECT_PIXELS_TO_POINTS(Rect(610, 362, 4, 16)));
+
+	pT1 = ProgressTimer::create(sp);
+	pT1->setScaleX(36);
+	pT1->setScaleY(0.65);
+	pT1->setAnchorPoint(Vec2(0, 0));
+	pT1->setType(ProgressTimerType::BAR);
+	pT1->setBarChangeRate(Point(1, 0));
+	pT1->setMidpoint(Point(0, 1));
+	pT1->setPercentage(100);
+	pT1->setPosition(Vec2(52, visibleSize.height / 2 + origin.y + 47));
+	UIlayer->addChild(pT1, 2);
+	sp0->setAnchorPoint(Vec2(0, 0));
+	sp0->setScale(0.4);
+	sp0->setPosition(Vec2(35, visibleSize.height / 2 + origin.y + 45));
+	UIlayer->addChild(sp0, 1);
+
+	pT2 = ProgressTimer::create(sp);
+	pT2->setScaleX(36);
+	pT2->setScaleY(0.65);
+	pT2->setAnchorPoint(Vec2(0, 0));
+	pT2->setType(ProgressTimerType::BAR);
+	pT2->setBarChangeRate(Point(1, 0));
+	pT2->setMidpoint(Point(0, 1));
+	pT2->setPercentage(100);
+	pT2->setPosition(Vec2(52, visibleSize.height / 2 + origin.y - 103));
+	UIlayer->addChild(pT2, 2);
+	sp1->setAnchorPoint(Vec2(0, 0));
+	sp1->setScale(0.4);
+	sp1->setPosition(Vec2(35, visibleSize.height / 2 + origin.y - 105));
+	UIlayer->addChild(sp1, 1);
 }
 
 
@@ -444,6 +542,7 @@ void HelloWorld::layBomb(Sprite* player)
 		else
 		{
 			P1BombLaid++;
+			P1bombNum->setString(std::to_string(P1BombMax - P1BombLaid));
 			auto bomb = Sprite::create();
 			bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
 			bomb->setTag(11);
@@ -457,6 +556,7 @@ void HelloWorld::layBomb(Sprite* player)
 				bombExplode(P1BombWavePower, bomb->getPosition(), posX, posY);
 				BombExploding(posX, posY, P1BombWavePower);
 				P1BombLaid--;
+				P1bombNum->setString(std::to_string(P1BombMax - P1BombLaid));
 			}),
 				nullptr
 				);
@@ -476,6 +576,7 @@ void HelloWorld::layBomb(Sprite* player)
 		else
 		{
 			P2BombLaid++;
+			P2bombNum->setString(std::to_string(P2BombMax - P2BombLaid));
 			auto bomb = Sprite::create();
 			bomb->setPosition(Vec2(P2PositionX * waveGridSize + P2InitialX, P2PositionY * waveGridSize + P2InitialY));
 			bomb->setTag(22);
@@ -487,6 +588,7 @@ void HelloWorld::layBomb(Sprite* player)
 				this->BombMatrix[posX][posY] = nullptr;
 				bomb->removeFromParentAndCleanup(true);
 				P2BombLaid--;
+				P2bombNum->setString(std::to_string(P2BombMax - P2BombLaid));
 				bombExplode(P2BombWavePower, bomb->getPosition(), posX, posY);
 				BombExploding(posX, posY, P2BombWavePower);
 			}),
