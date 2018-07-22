@@ -477,10 +477,10 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 		DelayTime::create(explosionHoldDuration),
 		CallFunc::create([i, flag, position, offsetX, offsetY, posX, posY, this]()
 		{
-		auto floating = RepeatForever::create(Sequence::create(MoveBy::create(1, Vec2(0, 10)), MoveBy::create(1, Vec2(0, -10)), nullptr));
 			checkAndChangeBlood(posX + i * offsetX, posY + i * offsetY);
 			if (flag)
 			{
+				auto floating = RepeatForever::create(Sequence::create(MoveBy::create(1, Vec2(0, 10)), MoveBy::create(1, Vec2(0, -10)), nullptr));
 				int randomNumber = rand() % 100;
 				if (randomNumber <= 9)
 				{
