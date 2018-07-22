@@ -1439,7 +1439,7 @@ void HelloWorld::BombUp(Sprite* player)
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2BombMax++;
 		P2bombNumLabel->setString(std::to_string(P2BombMax));
-		P1SkillCDs[2] = 30;
+		P2SkillCDs[2] = 30;
 		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombMax--; P2bombNumLabel->setString(std::to_string(P2BombMax - P2BombLaid)); }), nullptr);
 		this->runAction(ac);
 	}
@@ -1471,7 +1471,7 @@ void HelloWorld::PowerUp(Sprite* player)
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2BombWavePower++;
 		P2powerLabel->setString(std::to_string(P2BombWavePower));
-		P1SkillCDs[3] = 30;
+		P2SkillCDs[3] = 30;
 		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombWavePower--; P2powerLabel->setString(std::to_string(P2BombWavePower)); }), nullptr);
 		this->runAction(ac);
 	}
@@ -1503,7 +1503,7 @@ void HelloWorld::SpeedUp(Sprite* player)
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2Speed++;
 		P2speedLabel->setString(std::to_string(P2Speed));
-		P1SkillCDs[4] = 30;
+		P2SkillCDs[4] = 30;
 		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2Speed--; P2speedLabel->setString(std::to_string(P2Speed)); }), nullptr);
 		this->runAction(ac);
 	}
