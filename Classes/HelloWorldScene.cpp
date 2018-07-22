@@ -751,7 +751,7 @@ void HelloWorld::layBomb(Sprite* player)
 			bomb->setTag(11);
 			this->addChild(bomb, 0);
 			auto bombSequence = Sequence::create(
-				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
+				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2.5),
 				CallFunc::create([bomb, posX, posY, this]()
 			{
 				this->BombMatrix[posX][posY] = nullptr;
@@ -786,7 +786,7 @@ void HelloWorld::layBomb(Sprite* player)
 			bomb->setTag(22);
 			this->addChild(bomb, 0);
 			auto bombSequence = Sequence::create(
-				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2),
+				Repeat::create(Animate::create(AnimationCache::getInstance()->getAnimation("bombAnimation")), 2.5),
 				CallFunc::create([bomb, posX, posY, this]()
 			{
 				this->BombMatrix[posX][posY] = nullptr;
