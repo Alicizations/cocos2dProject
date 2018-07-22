@@ -520,6 +520,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 	auto waveTail = Sprite::create();
 	waveTail->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 	this->addChild(waveTail, 1);
+
 	auto waveSequence = Sequence::create(Animate::create(AnimationCache::getInstance()->getAnimation(direction + "WaveTailGeneratingAnimation")),
 		DelayTime::create(explosionHoldDuration),
 		CallFunc::create([i, flag, position, offsetX, offsetY, posX, posY, this]()
@@ -527,6 +528,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 			checkAndChangeBlood(posX + i * offsetX, posY + i * offsetY);
 			if (flag)
 			{
+				auto floating = RepeatForever::create(Sequence::create(MoveBy::create(1, Vec2(0, 10)), MoveBy::create(1, Vec2(0, -10)), nullptr));
 				int randomNumber = rand() % 100;
 				if (randomNumber <= 9)
 				{
@@ -535,6 +537,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 					pro->setTag(1);
 					this->addChild(pro, 0);
+					pro->runAction(floating);
 				}
 				else if (randomNumber <= 26)
 				{
@@ -543,6 +546,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 					pro->setTag(2);
 					this->addChild(pro, 0);
+					pro->runAction(floating);
 				}
 				else if (randomNumber <= 43)
 				{
@@ -551,6 +555,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 					pro->setTag(3);
 					this->addChild(pro, 0);
+					pro->runAction(floating);
 				}
 				else if (randomNumber <= 60)
 				{
@@ -559,6 +564,7 @@ void HelloWorld::ExplosionWaveGenerator(string direction, int offsetX, int offse
 					pro->setPosition(position.x + i * waveGridSize * offsetX, position.y + i * waveGridSize * offsetY);
 					pro->setTag(4);
 					this->addChild(pro, 0);
+					pro->runAction(floating);
 				}
 			}
 		}),
