@@ -1,4 +1,5 @@
 #include "HelloWorldScene.h"
+#include "OverScene.h"
 #include "SimpleAudioEngine.h"
 #include <cmath>
 #include <string>
@@ -7,6 +8,7 @@ USING_NS_CC;
  
 #define P1WalkDuration (1.0f / P1Speed)
 #define P2WalkDuration (1.0f / P2Speed)
+#define database UserDefault::getInstance()
 
 Scene* HelloWorld::createScene() 
 {
@@ -293,37 +295,60 @@ void HelloWorld::addSprite()
 	UIlayer->addChild(player1, 2);
 
 	auto bomb1 = Sprite::create("bomb/bomb.png");
-	bomb1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 140));
+	bomb1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 150));
 	bomb1->setScale(0.8);
 	UIlayer->addChild(bomb1, 2);
 
 	P1bombNumLabel = Label::createWithTTF(std::to_string(P1BombMax - P1BombLaid), "fonts/arial.ttf", 20);
-	P1bombNumLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 140));
+	P1bombNumLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 150));
 	P1bombNumLabel->setColor(Color3B::BLACK);
 	P1bombNumLabel->enableBold();
 	UIlayer->addChild(P1bombNumLabel, 2);
 
 	auto power1 = Sprite::create("ui/power.png");
-	power1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 110));
+	power1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 120));
 	power1->setScale(0.8);
 	UIlayer->addChild(power1, 2);
 
 	P1powerLabel = Label::createWithTTF(std::to_string(P1BombWavePower), "fonts/arial.ttf", 20);
-	P1powerLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 110));
+	P1powerLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 120));
 	P1powerLabel->setColor(Color3B::BLACK);
 	P1powerLabel->enableBold();
 	UIlayer->addChild(P1powerLabel, 2);
 
 	auto speed1 = Sprite::create("ui/speed.png");
-	speed1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 80));
+	speed1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 90));
 	speed1->setScale(0.8);
 	UIlayer->addChild(speed1, 2);
 
 	P1speedLabel = Label::createWithTTF(std::to_string(P1Speed), "fonts/arial.ttf", 20);
-	P1speedLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 80));
+	P1speedLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 90));
 	P1speedLabel->setColor(Color3B::BLACK);
 	P1speedLabel->enableBold();
 	UIlayer->addChild(P1speedLabel, 2);
+
+	string P1skill;
+	switch (P1SkillIndex) {
+	case 0:
+		P1skill = "flash";
+		break;
+	case 1:
+		P1skill = "heal";
+		break;
+	case 2:
+		P1skill = "BombUp";
+		break;
+	case 3:
+		P1skill = "PowerUp";
+		break;
+	case 4:
+		P1skill = "SpeedUp";
+		break;
+	}
+	P1skillSprite = Sprite::create("ui/" + P1skill + ".png");
+	P1skillSprite->setScale(0.3);
+	P1skillSprite->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 60));
+	UIlayer->addChild(P1skillSprite, 2);
 
 	auto box2 = Sprite::create("ui/box.png");
 	box2->setPosition(Vec2(100, visibleSize.height / 2 + origin.y -50));
@@ -335,37 +360,60 @@ void HelloWorld::addSprite()
 	UIlayer->addChild(player2, 2);
 
 	auto bomb2 = Sprite::create("bomb/bomb.png");
-	bomb2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 10));
+	bomb2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y));
 	bomb2->setScale(0.8);
 	UIlayer->addChild(bomb2, 2);
 
 	P2bombNumLabel = Label::createWithTTF(std::to_string(P2BombMax - P2BombLaid), "fonts/arial.ttf", 20);
-	P2bombNumLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 10));
+	P2bombNumLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y));
 	P2bombNumLabel->setColor(Color3B::BLACK);
 	P2bombNumLabel->enableBold();
 	UIlayer->addChild(P2bombNumLabel, 2);
 
 	auto power2 = Sprite::create("ui/power.png");
-	power2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 40));
+	power2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 30));
 	power2->setScale(0.8);
 	UIlayer->addChild(power2, 2);
 
 	P2powerLabel = Label::createWithTTF(std::to_string(P2BombWavePower), "fonts/arial.ttf", 20);
-	P2powerLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 40));
+	P2powerLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 30));
 	P2powerLabel->setColor(Color3B::BLACK);
 	P2powerLabel->enableBold();
 	UIlayer->addChild(P2powerLabel, 2);
 
 	auto speed2 = Sprite::create("ui/speed.png");
-	speed2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 70));
+	speed2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 60));
 	speed2->setScale(0.8);
 	UIlayer->addChild(speed2, 2);
 
 	P2speedLabel = Label::createWithTTF(std::to_string(P2Speed), "fonts/arial.ttf", 20);
-	P2speedLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 70));
+	P2speedLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 60));
 	P2speedLabel->setColor(Color3B::BLACK);
 	P2speedLabel->enableBold();
 	UIlayer->addChild(P2speedLabel, 2);
+
+	string P2skill;
+	switch (P2SkillIndex) {
+	case 0:
+		P2skill = "flash";
+		break;
+	case 1:
+		P2skill = "heal";
+		break;
+	case 2:
+		P2skill = "BombUp";
+		break;
+	case 3:
+		P2skill = "PowerUp";
+		break;
+	case 4:
+		P2skill = "SpeedUp";
+		break;
+	}
+	P2skillSprite = Sprite::create("ui/" + P2skill + ".png");
+	P2skillSprite->setScale(0.3);
+	P2skillSprite->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 90));
+	UIlayer->addChild(P2skillSprite, 2);
 
 	Sprite* sp0 = Sprite::create("ui/hp.png", CC_RECT_PIXELS_TO_POINTS(Rect(0, 320, 420, 47)));
 	Sprite* sp1 = Sprite::create("ui/hp.png", CC_RECT_PIXELS_TO_POINTS(Rect(0, 320, 420, 47)));
@@ -379,11 +427,11 @@ void HelloWorld::addSprite()
 	pT1->setBarChangeRate(Point(1, 0));
 	pT1->setMidpoint(Point(0, 1));
 	pT1->setPercentage(100);
-	pT1->setPosition(Vec2(52, visibleSize.height / 2 + origin.y + 47));
+	pT1->setPosition(Vec2(52, visibleSize.height / 2 + origin.y + 37));
 	UIlayer->addChild(pT1, 2);
 	sp0->setAnchorPoint(Vec2(0, 0));
 	sp0->setScale(0.4);
-	sp0->setPosition(Vec2(35, visibleSize.height / 2 + origin.y + 45));
+	sp0->setPosition(Vec2(35, visibleSize.height / 2 + origin.y + 35));
 	UIlayer->addChild(sp0, 1);
 
 	pT2 = ProgressTimer::create(sp);
@@ -394,11 +442,11 @@ void HelloWorld::addSprite()
 	pT2->setBarChangeRate(Point(1, 0));
 	pT2->setMidpoint(Point(0, 1));
 	pT2->setPercentage(100);
-	pT2->setPosition(Vec2(52, visibleSize.height / 2 + origin.y - 103));
+	pT2->setPosition(Vec2(52, visibleSize.height / 2 + origin.y - 113));
 	UIlayer->addChild(pT2, 2);
 	sp1->setAnchorPoint(Vec2(0, 0));
 	sp1->setScale(0.4);
-	sp1->setPosition(Vec2(35, visibleSize.height / 2 + origin.y - 105));
+	sp1->setPosition(Vec2(35, visibleSize.height / 2 + origin.y - 115));
 	UIlayer->addChild(sp1, 1);
 }
 
@@ -595,7 +643,7 @@ void HelloWorld::checkDIE()
 		player1->runAction(ac); 
 		auto ac2 = Animate::create(AnimationCache::getInstance()->getAnimation("player2WinAnimation"));
 		player2->runAction(ac2);
-		GameOver(1);
+		GameOver(2);
 	}
 	if (!IsOver && pT2->getPercentage() <= 0)
 	{
@@ -604,10 +652,16 @@ void HelloWorld::checkDIE()
 		auto ac2 = Animate::create(AnimationCache::getInstance()->getAnimation("player1WinAnimation"));
 		player1->runAction(ac2);
 		IsOver = true;
-		GameOver(2);
+		GameOver(1);
 	}
 }
 
+void HelloWorld::Over(float t)
+{
+	CCScene *s = OverScene::createScene();
+	CCTransitionScene *reScene = CCTransitionProgressRadialCCW::create(1.2, s);
+	CCDirector::sharedDirector()->replaceScene(reScene);
+}
 void HelloWorld::GameOver(int winner)
 {
 	// 取消调度器
@@ -617,8 +671,10 @@ void HelloWorld::GameOver(int winner)
 	_eventDispatcher->removeAllEventListeners();
 	// 停止bgm,播放死亡和胜利音乐
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+	database->setIntegerForKey("winner", winner);
+	scheduleOnce(schedule_selector(HelloWorld::Over), 2.0f);
 	auto ac = Sequence::create(CCCallFunc::create([this]() {SimpleAudioEngine::getInstance()->playEffect("sound/die.wav"); }),
-		CCCallFunc::create([this]() {SimpleAudioEngine::getInstance()->playEffect("sound/win.wav"); }),
+		CCCallFunc::create([this]() {SimpleAudioEngine::getInstance()->playEffect("sound/win.wav"); }),		
 		nullptr);
 	this->runAction(ac);
 }
@@ -699,6 +755,23 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	case EventKeyboard::KeyCode::KEY_CAPITAL_R:
 		SimpleAudioEngine::getInstance()->playEffect("sound/change.wav");
 		P1SkillIndex = (P1SkillIndex + 1) % SkillCount;
+		switch (P1SkillIndex) {
+		case 0:
+			P1skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/flash.png"));
+			break;
+		case 1:
+			P1skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/heal.png"));
+			break;
+		case 2:
+			P1skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/BombUp.png"));
+			break;
+		case 3:
+			P1skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/PowerUp.png"));
+			break;
+		case 4:
+			P1skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/SpeedUp.png"));
+			break;
+		}
 		break;
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
 		P2TryMoving = true;
@@ -726,6 +799,23 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	case EventKeyboard::KeyCode::KEY_2:
 		SimpleAudioEngine::getInstance()->playEffect("sound/change.wav");
 		P2SkillIndex = (P2SkillIndex + 1) % SkillCount;
+		switch (P2SkillIndex) {
+		case 0:
+			P2skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/flash.png"));
+			break;
+		case 1:
+			P2skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/heal.png"));
+			break;
+		case 2:
+			P2skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/BombUp.png"));
+			break;
+		case 3:
+			P2skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/PowerUp.png"));
+			break;
+		case 4:
+			P2skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/SpeedUp.png"));
+			break;
+		}
 		break;
 	}
 }

@@ -12,11 +12,10 @@ using namespace CocosDenshion;
 class HelloWorld : public cocos2d::Scene {
 public:
 	static cocos2d::Scene* createScene();
-
 	virtual bool init();
 
 	// a selector callback
-
+	void Over(float);
 	void initalizeParameters();
 	void loadAnimation();
 	void loadMap();
@@ -148,6 +147,8 @@ private:
 	Label* P2speedLabel;
 	cocos2d::ProgressTimer* pT1;
 	cocos2d::ProgressTimer* pT2;
+	Sprite* P1skillSprite;
+	Sprite* P2skillSprite;
 
   // implement the "static create()" method manually
   CREATE_FUNC(HelloWorld);

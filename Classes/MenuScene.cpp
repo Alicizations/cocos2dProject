@@ -63,7 +63,7 @@ bool MenuScene::init()
 	baobao->setPosition(Vec2(visibleSize.width / 2 + origin.x - 150, visibleSize.height / 2 + origin.y + 30));
 	this->addChild(baobao, 2);
 
-	auto p1Introduce = Label::createWithTTF("move:WASD\nbomb:space\nuse skill:F\nchange skill:R", "fonts/arial.ttf", 20);
+	auto p1Introduce = Label::createWithTTF("move:WASD\nbomb:space\nuse spell:F\nchange spell:R", "fonts/arial.ttf", 20);
 	p1Introduce->enableBold();
 	p1Introduce->setPosition(Vec2(visibleSize.width / 2 + origin.x - 150, visibleSize.height / 2 + origin.y - 70));
 	p1Introduce->setColor(Color3B::RED);
@@ -86,7 +86,7 @@ bool MenuScene::init()
 	pidan->setPosition(Vec2(visibleSize.width / 2 + origin.x + 150, visibleSize.height / 2 + origin.y + 30));
 	this->addChild(pidan, 2);
 
-	auto p2Introduce = Label::createWithTTF("move:direction\nbomb:enter\nuse skill:0\nchange skill:2", "fonts/arial.ttf", 20);
+	auto p2Introduce = Label::createWithTTF("move:direction\nbomb:enter\nuse spell:0\nchange spell:2", "fonts/arial.ttf", 20);
 	p2Introduce->enableBold();
 	p2Introduce->setPosition(Vec2(visibleSize.width / 2 + origin.x + 150, visibleSize.height / 2 + origin.y - 70));
 	p2Introduce->setColor(Color3B::BLUE);

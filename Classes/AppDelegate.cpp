@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "MenuScene.h"
+#include "OverScene.h"
 #include "network\HttpClient.h"
 
 using namespace cocos2d::network;
@@ -90,7 +91,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
   // create a scene. it's an autorelease object
   auto scene = MenuScene::createScene();
-
+  
   // run
   director->runWithScene(scene);
 
