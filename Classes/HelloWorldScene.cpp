@@ -119,10 +119,10 @@ void HelloWorld::initalizeParameters()
 	fireStatus = 0;
 
 	// skill relative
-	SkillCount = 5;
+	SkillCount = 6;
 	P1SkillIndex = 0;
 	P2SkillIndex = 0;
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		P1SkillCDs[i] = P2SkillCDs[i] = 0;
 	}
@@ -344,6 +344,9 @@ void HelloWorld::addSprite()
 	case 4:
 		P1skill = "SpeedUp";
 		break;
+	case 5:
+		P1skill = "Shot";
+		break;
 	}
 	P1skillSprite = Sprite::create("ui/" + P1skill + ".png");
 	P1skillSprite->setScale(0.3);
@@ -408,6 +411,9 @@ void HelloWorld::addSprite()
 		break;
 	case 4:
 		P2skill = "SpeedUp";
+		break;
+	case 5:
+		P2skill = "Shot";
 		break;
 	}
 	P2skillSprite = Sprite::create("ui/" + P2skill + ".png");
@@ -596,7 +602,7 @@ void HelloWorld::addScheduler()
 
 void HelloWorld::CountCD(float f)
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		P1SkillCDs[i] = P1SkillCDs[i] > 0 ? P1SkillCDs[i] - 1 : 0;
 		P2SkillCDs[i] = P2SkillCDs[i] > 0 ? P2SkillCDs[i] - 1 : 0;
@@ -777,6 +783,9 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		case 4:
 			P1skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/SpeedUp.png"));
 			break;
+		case 5:
+			P1skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/Shot.png"));
+			break;
 		}
 		break;
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
@@ -820,6 +829,9 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 			break;
 		case 4:
 			P2skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/SpeedUp.png"));
+			break;
+		case 5:
+			P2skillSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage("ui/Shot.png"));
 			break;
 		}
 		break;
@@ -1121,6 +1133,9 @@ void HelloWorld::UseSkill(Sprite* player, int SkillIndex)
 	case 4:
 		SpeedUp(player);
 		break;
+	case 5:
+		Shot(player);
+		break;
 	default:
 		break;
 	}
@@ -1377,10 +1392,11 @@ void HelloWorld::recover(Sprite* player)
 			return;
 		}
 		SimpleAudioEngine::getInstance()->playEffect("sound/heal.wav");
-		float f = pT1->getPercentage() + 40 > 100 ? 100 : pT1->getPercentage() + 40;
+		float f = pT1->getPercentage() + 30 > 100 ? 100 : pT1->getPercentage() + 30;
 		auto animate = CCProgressTo::create(0.1, f);
 		pT1->runAction(animate);
-		P1SkillCDs[1] = 30;
+		P1SkillCDs[1] = HeakMaxCD;
+		HeakMaxCD += 10;
 	}
 	else
 	{
@@ -1493,6 +1509,51 @@ void HelloWorld::SpeedUp(Sprite* player)
 	}
 }
 
+void HelloWorld::Shot(Sprite* player)
+{
+	if (player == player1)
+	{
+		if (P1SkillCDs[5] > 0)
+		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
+			return;
+		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
+		auto pos = Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY);
+		if (P1Dir == 1)
+			ExplosionWaveGenerator("up", 0, 1, 2, pos, P1PositionX, P1PositionY);
+		else if (P1Dir == 2)
+			ExplosionWaveGenerator("down", 0, -1, 2, pos, P1PositionX, P1PositionY);
+		else if(P1Dir == 3)
+			ExplosionWaveGenerator("left", -1, 0, 2, pos, P1PositionX, P1PositionY);
+		else if(P1Dir == 4)
+			ExplosionWaveGenerator("right", 1, 0, 2, pos, P1PositionX, P1PositionY);
+		P1SkillCDs[5] = 40;
+		
+	}
+	else
+	{
+		if (P2SkillCDs[5] > 0)
+		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
+			return;
+		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
+		auto pos = Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY);
+		if (P2Dir == 1)
+			ExplosionWaveGenerator("up", 0, 1, 2, pos, P2PositionX, P2PositionY);
+		else if (P2Dir == 2)
+			ExplosionWaveGenerator("down", 0, -1, 2, pos, P2PositionX, P2PositionY);
+		else if (P2Dir == 3)
+			ExplosionWaveGenerator("left", -1, 0, 2, pos, P2PositionX, P2PositionY);
+		else if (P2Dir == 4)
+			ExplosionWaveGenerator("right", 1, 0, 2, pos, P2PositionX, P2PositionY);
+		P2SkillCDs[5] = 40;
+		
+
+	}
+}
+
 void HelloWorld::checkAndHandleProperty(int playerID)
 {
 	int i;
@@ -1504,7 +1565,7 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			auto pro = PropertyMatrix[P1PositionX][P1PositionY];
 			if (pro->getTag() == 1)
 			{
-				auto animate = CCProgressTo::create(0.1, pT1->getPercentage() + 10);
+				auto animate = CCProgressTo::create(0.1, pT1->getPercentage() + 20);
 				pT1->runAction(animate);
 			}
 			else if (pro->getTag() == 2)
@@ -1536,7 +1597,7 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			auto pro = PropertyMatrix[P2PositionX][P2PositionY];
 			if (pro->getTag() == 1)
 			{
-				auto animate = CCProgressTo::create(0.1, pT2->getPercentage() + 10);
+				auto animate = CCProgressTo::create(0.1, pT2->getPercentage() + 20);
 				pT2->runAction(animate);
 			}
 			else if (pro->getTag() == 2)
@@ -1574,6 +1635,7 @@ void HelloWorld::checkAndChangeBlood(int posX, int posY)
 		}),
 			nullptr
 		);
+
 		pT1->runAction(bloodSequence);
 	}
 	if (posX == P2PositionX && posY  == P2PositionY && !P2absoluteDefense)
@@ -1586,6 +1648,7 @@ void HelloWorld::checkAndChangeBlood(int posX, int posY)
 		}),
 			nullptr
 		);
+
 		pT2->runAction(bloodSequence);
 	}
 }

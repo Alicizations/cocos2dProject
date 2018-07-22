@@ -52,6 +52,7 @@ public:
 	void BombUp(Sprite* player);
 	void PowerUp(Sprite* player);
 	void SpeedUp(Sprite* player);
+	void Shot(Sprite* player);
 	void CountCD(float f);
 	// living relative
 	void checkDIE();
@@ -114,8 +115,9 @@ private:
 	// living
 	bool IsOver;
 	// skill relative
-	int P1SkillCDs[5];
-	int P2SkillCDs[5];
+	int P1SkillCDs[6];
+	int P2SkillCDs[6];
+	int HeakMaxCD;
 	// 0 flash, 1 recover, 2 bomb, 3 power, 4 speed
 	int P1SkillIndex;
 	int P2SkillIndex;
