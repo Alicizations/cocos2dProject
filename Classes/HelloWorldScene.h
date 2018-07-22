@@ -140,12 +140,12 @@ private:
 	CCTMXLayer* fortune;
 
 	Layer* UIlayer;
-	Label* P1bombNum;
-	Label* P2bombNum;
-	Label* P1power;
-	Label* P2power;
-	Label* P1speed;
-	Label* P2speed;
+	Label* P1bombNumLabel;
+	Label* P2bombNumLabel;
+	Label* P1powerLabel;
+	Label* P2powerLabel;
+	Label* P1speedLabel;
+	Label* P2speedLabel;
 	cocos2d::ProgressTimer* pT1;
 	cocos2d::ProgressTimer* pT2;
 

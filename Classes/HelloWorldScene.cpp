@@ -297,33 +297,33 @@ void HelloWorld::addSprite()
 	bomb1->setScale(0.8);
 	UIlayer->addChild(bomb1, 2);
 
-	P1bombNum = Label::createWithTTF(std::to_string(P1BombMax - P1BombLaid), "fonts/arial.ttf", 20);
-	P1bombNum->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 140));
-	P1bombNum->setColor(Color3B::BLACK);
-	P1bombNum->enableBold();
-	UIlayer->addChild(P1bombNum, 2);
+	P1bombNumLabel = Label::createWithTTF(std::to_string(P1BombMax - P1BombLaid), "fonts/arial.ttf", 20);
+	P1bombNumLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 140));
+	P1bombNumLabel->setColor(Color3B::BLACK);
+	P1bombNumLabel->enableBold();
+	UIlayer->addChild(P1bombNumLabel, 2);
 
 	auto power1 = Sprite::create("ui/power.png");
 	power1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 110));
 	power1->setScale(0.8);
 	UIlayer->addChild(power1, 2);
 
-	P1power = Label::createWithTTF(std::to_string(P1BombWavePower), "fonts/arial.ttf", 20);
-	P1power->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 110));
-	P1power->setColor(Color3B::BLACK);
-	P1power->enableBold();
-	UIlayer->addChild(P1power, 2);
+	P1powerLabel = Label::createWithTTF(std::to_string(P1BombWavePower), "fonts/arial.ttf", 20);
+	P1powerLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 110));
+	P1powerLabel->setColor(Color3B::BLACK);
+	P1powerLabel->enableBold();
+	UIlayer->addChild(P1powerLabel, 2);
 
 	auto speed1 = Sprite::create("ui/speed.png");
 	speed1->setPosition(Vec2(130, visibleSize.height / 2 + origin.y + 80));
 	speed1->setScale(0.8);
 	UIlayer->addChild(speed1, 2);
 
-	P1speed = Label::createWithTTF(std::to_string(P1Speed), "fonts/arial.ttf", 20);
-	P1speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 80));
-	P1speed->setColor(Color3B::BLACK);
-	P1speed->enableBold();
-	UIlayer->addChild(P1speed, 2);
+	P1speedLabel = Label::createWithTTF(std::to_string(P1Speed), "fonts/arial.ttf", 20);
+	P1speedLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y + 80));
+	P1speedLabel->setColor(Color3B::BLACK);
+	P1speedLabel->enableBold();
+	UIlayer->addChild(P1speedLabel, 2);
 
 	auto box2 = Sprite::create("ui/box.png");
 	box2->setPosition(Vec2(100, visibleSize.height / 2 + origin.y -50));
@@ -339,33 +339,33 @@ void HelloWorld::addSprite()
 	bomb2->setScale(0.8);
 	UIlayer->addChild(bomb2, 2);
 
-	P2bombNum = Label::createWithTTF(std::to_string(P2BombMax - P2BombLaid), "fonts/arial.ttf", 20);
-	P2bombNum->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 10));
-	P2bombNum->setColor(Color3B::BLACK);
-	P2bombNum->enableBold();
-	UIlayer->addChild(P2bombNum, 2);
+	P2bombNumLabel = Label::createWithTTF(std::to_string(P2BombMax - P2BombLaid), "fonts/arial.ttf", 20);
+	P2bombNumLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 10));
+	P2bombNumLabel->setColor(Color3B::BLACK);
+	P2bombNumLabel->enableBold();
+	UIlayer->addChild(P2bombNumLabel, 2);
 
 	auto power2 = Sprite::create("ui/power.png");
 	power2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 40));
 	power2->setScale(0.8);
 	UIlayer->addChild(power2, 2);
 
-	P2power = Label::createWithTTF(std::to_string(P2BombWavePower), "fonts/arial.ttf", 20);
-	P2power->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 40));
-	P2power->setColor(Color3B::BLACK);
-	P2power->enableBold();
-	UIlayer->addChild(P2power, 2);
+	P2powerLabel = Label::createWithTTF(std::to_string(P2BombWavePower), "fonts/arial.ttf", 20);
+	P2powerLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 40));
+	P2powerLabel->setColor(Color3B::BLACK);
+	P2powerLabel->enableBold();
+	UIlayer->addChild(P2powerLabel, 2);
 
 	auto speed2 = Sprite::create("ui/speed.png");
 	speed2->setPosition(Vec2(130, visibleSize.height / 2 + origin.y - 70));
 	speed2->setScale(0.8);
 	UIlayer->addChild(speed2, 2);
 
-	P2speed = Label::createWithTTF(std::to_string(P2Speed), "fonts/arial.ttf", 20);
-	P2speed->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 70));
-	P2speed->setColor(Color3B::BLACK);
-	P2speed->enableBold();
-	UIlayer->addChild(P2speed, 2);
+	P2speedLabel = Label::createWithTTF(std::to_string(P2Speed), "fonts/arial.ttf", 20);
+	P2speedLabel->setPosition(Vec2(155, visibleSize.height / 2 + origin.y - 70));
+	P2speedLabel->setColor(Color3B::BLACK);
+	P2speedLabel->enableBold();
+	UIlayer->addChild(P2speedLabel, 2);
 
 	Sprite* sp0 = Sprite::create("ui/hp.png", CC_RECT_PIXELS_TO_POINTS(Rect(0, 320, 420, 47)));
 	Sprite* sp1 = Sprite::create("ui/hp.png", CC_RECT_PIXELS_TO_POINTS(Rect(0, 320, 420, 47)));
@@ -744,7 +744,7 @@ void HelloWorld::layBomb(Sprite* player)
 		else
 		{
 			P1BombLaid++;
-			P1bombNum->setString(std::to_string(P1BombMax - P1BombLaid));
+			P1bombNumLabel->setString(std::to_string(P1BombMax - P1BombLaid));
 			auto bomb = Sprite::create();
 			SimpleAudioEngine::getInstance()->playEffect("sound/lay.wav");
 			bomb->setPosition(Vec2(P1PositionX * waveGridSize + P1InitialX, P1PositionY * waveGridSize + P1InitialY));
@@ -759,7 +759,7 @@ void HelloWorld::layBomb(Sprite* player)
 				bombExplode(P1BombWavePower, bomb->getPosition(), posX, posY);
 				BombExploding(posX, posY, P1BombWavePower);
 				P1BombLaid--;
-				P1bombNum->setString(std::to_string(P1BombMax - P1BombLaid));
+				P1bombNumLabel->setString(std::to_string(P1BombMax - P1BombLaid));
 			}),
 				nullptr
 				);
@@ -779,7 +779,7 @@ void HelloWorld::layBomb(Sprite* player)
 		else
 		{
 			P2BombLaid++;
-			P2bombNum->setString(std::to_string(P2BombMax - P2BombLaid));
+			P2bombNumLabel->setString(std::to_string(P2BombMax - P2BombLaid));
 			auto bomb = Sprite::create();
 			SimpleAudioEngine::getInstance()->playEffect("sound/lay.wav");
 			bomb->setPosition(Vec2(P2PositionX * waveGridSize + P2InitialX, P2PositionY * waveGridSize + P2InitialY));
@@ -792,7 +792,7 @@ void HelloWorld::layBomb(Sprite* player)
 				this->BombMatrix[posX][posY] = nullptr;
 				bomb->removeFromParentAndCleanup(true);
 				P2BombLaid--;
-				P2bombNum->setString(std::to_string(P2BombMax - P2BombLaid));
+				P2bombNumLabel->setString(std::to_string(P2BombMax - P2BombLaid));
 				bombExplode(P2BombWavePower, bomb->getPosition(), posX, posY);
 				BombExploding(posX, posY, P2BombWavePower);
 			}),
@@ -1312,9 +1312,9 @@ void HelloWorld::BombUp(Sprite* player)
 		}
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P1BombMax++;
-		P1bombNum->setString(std::to_string(P1BombMax));
+		P1bombNumLabel->setString(std::to_string(P1BombMax));
 		P1SkillCDs[2] = 30;
-		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1BombMax--;P1bombNum->setString(std::to_string(P1BombMax));}), nullptr);
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1BombMax--;P1bombNumLabel->setString(std::to_string(P1BombMax - P1BombLaid));}), nullptr);
 		this->runAction(ac);
 	}
 	else
@@ -1326,9 +1326,9 @@ void HelloWorld::BombUp(Sprite* player)
 		}
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2BombMax++;
-		P2bombNum->setString(std::to_string(P2BombMax));
+		P2bombNumLabel->setString(std::to_string(P2BombMax));
 		P1SkillCDs[2] = 30;
-		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombMax--; P2bombNum->setString(std::to_string(P2BombMax)); }), nullptr);
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombMax--; P2bombNumLabel->setString(std::to_string(P2BombMax - P2BombLaid)); }), nullptr);
 		this->runAction(ac);
 	}
 }
@@ -1344,9 +1344,9 @@ void HelloWorld::PowerUp(Sprite* player)
 		}
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P1BombWavePower++;
-		P1power->setString(std::to_string(P1BombWavePower));
+		P1powerLabel->setString(std::to_string(P1BombWavePower));
 		P1SkillCDs[3] = 30;
-		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1BombWavePower--; P1power->setString(std::to_string(P1BombWavePower)); }), nullptr);
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1BombWavePower--; P1powerLabel->setString(std::to_string(P1BombWavePower)); }), nullptr);
 		this->runAction(ac);
 	}
 	else
@@ -1358,9 +1358,9 @@ void HelloWorld::PowerUp(Sprite* player)
 		}
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2BombWavePower++;
-		P2power->setString(std::to_string(P2BombWavePower));
+		P2powerLabel->setString(std::to_string(P2BombWavePower));
 		P1SkillCDs[3] = 30;
-		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombWavePower--; P2power->setString(std::to_string(P2BombWavePower)); }), nullptr);
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2BombWavePower--; P2powerLabel->setString(std::to_string(P2BombWavePower)); }), nullptr);
 		this->runAction(ac);
 	}
 }
@@ -1376,9 +1376,9 @@ void HelloWorld::SpeedUp(Sprite* player)
 		}
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P1Speed++;
-		P1speed->setString(std::to_string((int)P1Speed));
+		P1speedLabel->setString(std::to_string(P1Speed));
 		P1SkillCDs[4] = 30;
-		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1Speed--; P1speed->setString(std::to_string((int)P1Speed)); }), nullptr);
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P1Speed--; P1speedLabel->setString(std::to_string(P1Speed)); }), nullptr);
 		this->runAction(ac);
 	}
 	else
@@ -1390,9 +1390,9 @@ void HelloWorld::SpeedUp(Sprite* player)
 		}
 		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2Speed++;
-		P2speed->setString(std::to_string((int)P2Speed));
+		P2speedLabel->setString(std::to_string(P2Speed));
 		P1SkillCDs[4] = 30;
-		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2Speed--; P2speed->setString(std::to_string((int)P2Speed)); }), nullptr);
+		auto ac = Sequence::create(DelayTime::create(15.0f), CCCallFunc::create([this]() {P2Speed--; P2speedLabel->setString(std::to_string(P2Speed)); }), nullptr);
 		this->runAction(ac);
 	}
 }
@@ -1415,18 +1415,18 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			{
 				if (P1BombWavePower < 10)
 					P1BombWavePower++;
-				P1power->setString(std::to_string(P1BombWavePower));
+				P1powerLabel->setString(std::to_string(P1BombWavePower));
 			}
 			else if (pro->getTag() == 3)
 			{
 				if(P1Speed < 10)
 					P1Speed++;
-				P1speed->setString(std::to_string(P1Speed));
+				P1speedLabel->setString(std::to_string(P1Speed));
 			}
 			else if (pro->getTag() == 4)
 			{
 				P1BombMax++;
-				P1bombNum->setString(std::to_string(P1BombMax - P1BombLaid));
+				P1bombNumLabel->setString(std::to_string(P1BombMax - P1BombLaid));
 			}
 			pro->removeFromParentAndCleanup(true);
 			PropertyMatrix[P1PositionX][P1PositionY] = nullptr;
@@ -1447,18 +1447,18 @@ void HelloWorld::checkAndHandleProperty(int playerID)
 			{
 				if (P2BombWavePower < 10)
 					P2BombWavePower++;
-				P2power->setString(std::to_string(P2BombWavePower));
+				P2powerLabel->setString(std::to_string(P2BombWavePower));
 			}
 			else if (pro->getTag() == 3)
 			{
 				if (P2Speed < 10)
 					P2Speed++;
-				P2speed->setString(std::to_string(P2Speed));
+				P2speedLabel->setString(std::to_string(P2Speed));
 			}
 			else if (pro->getTag() == 4)
 			{
 				P2BombMax++;
-				P2bombNum->setString(std::to_string(P2BombMax - P2BombLaid));
+				P2bombNumLabel->setString(std::to_string(P2BombMax - P2BombLaid));
 			}
 			pro->removeFromParentAndCleanup(true);
 			PropertyMatrix[P2PositionX][P2PositionY] = nullptr;

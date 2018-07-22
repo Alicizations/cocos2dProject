@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "HelloWorldScene.h"
+#include "MenuScene.h"
 #include "network\HttpClient.h"
 
 using namespace cocos2d::network;
@@ -89,7 +89,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
   register_all_packages();
 
   // create a scene. it's an autorelease object
-  auto scene = HelloWorld::createScene();
+  auto scene = MenuScene::createScene();
 
   // run
   director->runWithScene(scene);
