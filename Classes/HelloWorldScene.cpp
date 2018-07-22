@@ -110,10 +110,11 @@ void HelloWorld::initalizeParameters()
 	MaxSpeed = 10;
 
 	//决赛圈开始缩小时间
-	fireGeneratingStartTime = 20;
+	fireGeneratingStartTime = 30;
 	//决赛圈缩小间隔
-	fireGeneratingGap = 10;
+	fireGeneratingGap = 20;
 	fireTimeCount = 0;
+	fireStatus = 0;
 
 	// skill relative
 	SkillCount = 5;
@@ -123,6 +124,8 @@ void HelloWorld::initalizeParameters()
 	{
 		P1SkillCDs[i] = P2SkillCDs[i] = 0;
 	}
+
+	IsOver = false;
 }
 
 void HelloWorld::loadAnimation()
@@ -216,6 +219,10 @@ void HelloWorld::loadSound()
 	SimpleAudioEngine::getInstance()->preloadEffect("sound/get.wav");
 	SimpleAudioEngine::getInstance()->preloadEffect("sound/die.wav");
 	SimpleAudioEngine::getInstance()->preloadEffect("sound/win.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/cd.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/up.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/heal.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("sound/change.wav");
 	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("sound/bg.wav");
 }
 
@@ -540,15 +547,28 @@ void HelloWorld::CountCD(float f)
 		P1SkillCDs[i] = P1SkillCDs[i] > 0 ? P1SkillCDs[i] - 1 : 0;
 		P2SkillCDs[i] = P2SkillCDs[i] > 0 ? P2SkillCDs[i] - 1 : 0;
 	}
+	if (P1PositionX < 0 + fireStatus || P1PositionX > 15 - fireStatus || P1PositionY < 0 + fireStatus || P1PositionY > 15 - fireStatus)
+	{
+		float f = pT1->getPercentage() - 2;
+		auto animate = CCProgressTo::create(0.1, f);
+		pT1->runAction(animate);
+	}
+	if (P2PositionX < 0 + fireStatus || P2PositionX > 15 - fireStatus || P2PositionY < 0 + fireStatus || P2PositionY > 15 - fireStatus)
+	{
+		float f = pT2->getPercentage() - 2;
+		auto animate = CCProgressTo::create(0.1, f);
+		pT2->runAction(animate);
+	}
 }
 
 void HelloWorld::update(float f)
 {
-	if (!P1IsMoving && P1TryMoving)
+	checkDIE();
+	if (!IsOver && !P1IsMoving && P1TryMoving)
 	{
 		this->movePlayer(player1);
 	}
-	if (!P2IsMoving && P2TryMoving)
+	if (!IsOver && !P2IsMoving && P2TryMoving)
 	{
 		this->movePlayer(player2);
 	}
@@ -561,9 +581,48 @@ void HelloWorld::update(float f)
 		if (fireTimeCount == (fireGeneratingStartTime + i * fireGeneratingGap) * 20 )
 		{
 			fireGenerator(i);
+			fireStatus++;
 		}
 	}
 }
+
+void HelloWorld::checkDIE()
+{
+	if (!IsOver && pT1->getPercentage() <= 0)
+	{
+		IsOver = true;
+		auto ac = Animate::create(AnimationCache::getInstance()->getAnimation("player1DieAnimation"));
+		player1->runAction(ac); 
+		auto ac2 = Animate::create(AnimationCache::getInstance()->getAnimation("player2WinAnimation"));
+		player2->runAction(ac2);
+		GameOver(1);
+	}
+	if (!IsOver && pT2->getPercentage() <= 0)
+	{
+		auto ac = Animate::create(AnimationCache::getInstance()->getAnimation("player2DieAnimation"));
+		player2->runAction(ac);
+		auto ac2 = Animate::create(AnimationCache::getInstance()->getAnimation("player1WinAnimation"));
+		player1->runAction(ac2);
+		IsOver = true;
+		GameOver(2);
+	}
+}
+
+void HelloWorld::GameOver(int winner)
+{
+	// 取消调度器
+	unschedule(schedule_selector(HelloWorld::update));
+	unschedule(schedule_selector(HelloWorld::CountCD));
+	// 取消键盘监听事件
+	_eventDispatcher->removeAllEventListeners();
+	// 停止bgm,播放死亡和胜利音乐
+	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+	auto ac = Sequence::create(CCCallFunc::create([this]() {SimpleAudioEngine::getInstance()->playEffect("sound/die.wav"); }),
+		CCCallFunc::create([this]() {SimpleAudioEngine::getInstance()->playEffect("sound/win.wav"); }),
+		nullptr);
+	this->runAction(ac);
+}
+
 //决赛圈
 void HelloWorld::fireGenerator(int layer)
 {
@@ -638,6 +697,7 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		break;
 	case EventKeyboard::KeyCode::KEY_R:
 	case EventKeyboard::KeyCode::KEY_CAPITAL_R:
+		SimpleAudioEngine::getInstance()->playEffect("sound/change.wav");
 		P1SkillIndex = (P1SkillIndex + 1) % SkillCount;
 		break;
 	case EventKeyboard::KeyCode::KEY_UP_ARROW:
@@ -664,6 +724,7 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		UseSkill(player2, P2SkillIndex);
 		break;
 	case EventKeyboard::KeyCode::KEY_2:
+		SimpleAudioEngine::getInstance()->playEffect("sound/change.wav");
 		P2SkillIndex = (P2SkillIndex + 1) % SkillCount;
 		break;
 	}
@@ -766,7 +827,7 @@ void HelloWorld::BombExploding(int BombPositionX, int BombPositionY, int power)
 				int ttag = this->BombMatrix[BombPositionX][BombPositionY + i]->getTag();
 				this->BombMatrix[BombPositionX][BombPositionY + i]->stopAllActions();
 				RecoverBombCount(ttag);
-				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX][BombPositionY + i]->getPosition(), BombPositionX, BombPositionY + i);
+				bombExplode(GetBombPowerByTag(ttag), this->BombMatrix[BombPositionX][BombPositionY + i]->getPosition(), BombPositionX, BombPositionY + i);
 				this->BombMatrix[BombPositionX][BombPositionY + i]->removeFromParentAndCleanup(true);
 				this->BombMatrix[BombPositionX][BombPositionY + i] = nullptr;
 				BombExploding(BombPositionX, BombPositionY + i, GetBombPowerByTag(ttag));
@@ -784,7 +845,7 @@ void HelloWorld::BombExploding(int BombPositionX, int BombPositionY, int power)
 				int ttag = this->BombMatrix[BombPositionX][BombPositionY - i]->getTag();
 				this->BombMatrix[BombPositionX][BombPositionY - i]->stopAllActions();
 				RecoverBombCount(ttag);
-				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX][BombPositionY - i]->getPosition(), BombPositionX, BombPositionY - i);
+				bombExplode(GetBombPowerByTag(ttag), this->BombMatrix[BombPositionX][BombPositionY - i]->getPosition(), BombPositionX, BombPositionY - i);
 				this->BombMatrix[BombPositionX][BombPositionY - i]->removeFromParentAndCleanup(true);
 				this->BombMatrix[BombPositionX][BombPositionY - i] = nullptr;
 				BombExploding(BombPositionX, BombPositionY - i, GetBombPowerByTag(ttag));
@@ -802,7 +863,7 @@ void HelloWorld::BombExploding(int BombPositionX, int BombPositionY, int power)
 				int ttag = this->BombMatrix[BombPositionX - i][BombPositionY]->getTag();
 				this->BombMatrix[BombPositionX - i][BombPositionY]->stopAllActions();
 				RecoverBombCount(ttag);
-				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX - i][BombPositionY]->getPosition(), BombPositionX - i, BombPositionY);
+				bombExplode(GetBombPowerByTag(ttag), this->BombMatrix[BombPositionX - i][BombPositionY]->getPosition(), BombPositionX - i, BombPositionY);
 				this->BombMatrix[BombPositionX - i][BombPositionY]->removeFromParentAndCleanup(true);
 				this->BombMatrix[BombPositionX - i][BombPositionY] = nullptr;
 				BombExploding(BombPositionX - i, BombPositionY, GetBombPowerByTag(ttag));
@@ -820,7 +881,7 @@ void HelloWorld::BombExploding(int BombPositionX, int BombPositionY, int power)
 				int ttag = this->BombMatrix[BombPositionX + i][BombPositionY]->getTag();
 				this->BombMatrix[BombPositionX + i][BombPositionY]->stopAllActions();
 				RecoverBombCount(ttag);
-				bombExplode(P2BombWavePower, this->BombMatrix[BombPositionX + i][BombPositionY]->getPosition(), BombPositionX + i, BombPositionY);
+				bombExplode(GetBombPowerByTag(ttag), this->BombMatrix[BombPositionX + i][BombPositionY]->getPosition(), BombPositionX + i, BombPositionY);
 				this->BombMatrix[BombPositionX + i][BombPositionY]->removeFromParentAndCleanup(true);
 				this->BombMatrix[BombPositionX + i][BombPositionY] = nullptr;
 				BombExploding(BombPositionX + i, BombPositionY, GetBombPowerByTag(ttag));
@@ -1126,7 +1187,6 @@ bool HelloWorld::checkObjectAndRemove(int x, int y)
 
 void HelloWorld::flash(Sprite * player)
 {
-	player->stopAllActions();
 	if (player == player1)
 	{
 		P1IsMoving = false;
@@ -1149,6 +1209,7 @@ void HelloWorld::flash(Sprite * player)
 		}
 		if (P1PositionX + x < 16 && P1PositionX + x >= 0 && P1PositionY + y < 16 && P1PositionY + y >= 0 && checkCanMove(P1PositionX + x, P1PositionY + y))
 		{
+			player->stopAllActions();
 			auto flashGleam = Sprite::create();
 			flashGleam->setPosition(Vec2(P1InitialX + waveGridSize * P1PositionX, P1InitialY + waveGridSize * P1PositionY));
 			this->addChild(flashGleam, 3);
@@ -1164,7 +1225,7 @@ void HelloWorld::flash(Sprite * player)
 		}
 		else
 		{
-			
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 		}
 	}
 	else
@@ -1189,6 +1250,7 @@ void HelloWorld::flash(Sprite * player)
 		}
 		if (P2PositionX + x < 16 && P2PositionX + x >= 0 && P2PositionY + y < 16 && P2PositionY + y >= 0 && checkCanMove(P2PositionX + x, P2PositionY + y))
 		{
+			player->stopAllActions();
 			auto flashGleam = Sprite::create();
 			flashGleam->setPosition(Vec2(P2InitialX + waveGridSize * P2PositionX, P2InitialY + waveGridSize * P2PositionY));
 			this->addChild(flashGleam, 3);
@@ -1204,7 +1266,7 @@ void HelloWorld::flash(Sprite * player)
 		}
 		else
 		{
-
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 		}
 	}
 }
@@ -1215,8 +1277,10 @@ void HelloWorld::recover(Sprite* player)
 	{
 		if (P1SkillCDs[1] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/heal.wav");
 		float f = pT1->getPercentage() + 40 > 100 ? 100 : pT1->getPercentage() + 40;
 		auto animate = CCProgressTo::create(0.1, f);
 		pT1->runAction(animate);
@@ -1226,8 +1290,10 @@ void HelloWorld::recover(Sprite* player)
 	{
 		if (P2SkillCDs[1] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/heal.wav");
 		float f = pT2->getPercentage() + 40 > 100 ? 100 : pT2->getPercentage() + 40;
 		auto animate = CCProgressTo::create(0.1, f);
 		pT2->runAction(animate);
@@ -1241,8 +1307,10 @@ void HelloWorld::BombUp(Sprite* player)
 	{
 		if (P1SkillCDs[2] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P1BombMax++;
 		P1bombNum->setString(std::to_string(P1BombMax));
 		P1SkillCDs[2] = 30;
@@ -1253,8 +1321,10 @@ void HelloWorld::BombUp(Sprite* player)
 	{
 		if (P2SkillCDs[2] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2BombMax++;
 		P2bombNum->setString(std::to_string(P2BombMax));
 		P1SkillCDs[2] = 30;
@@ -1269,8 +1339,10 @@ void HelloWorld::PowerUp(Sprite* player)
 	{
 		if (P1SkillCDs[3] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P1BombWavePower++;
 		P1power->setString(std::to_string(P1BombWavePower));
 		P1SkillCDs[3] = 30;
@@ -1281,8 +1353,10 @@ void HelloWorld::PowerUp(Sprite* player)
 	{
 		if (P2SkillCDs[3] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2BombWavePower++;
 		P2power->setString(std::to_string(P2BombWavePower));
 		P1SkillCDs[3] = 30;
@@ -1297,8 +1371,10 @@ void HelloWorld::SpeedUp(Sprite* player)
 	{
 		if (P1SkillCDs[4] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P1Speed++;
 		P1speed->setString(std::to_string((int)P1Speed));
 		P1SkillCDs[4] = 30;
@@ -1309,8 +1385,10 @@ void HelloWorld::SpeedUp(Sprite* player)
 	{
 		if (P2SkillCDs[4] > 0)
 		{
+			SimpleAudioEngine::getInstance()->playEffect("sound/cd.wav");
 			return;
 		}
+		SimpleAudioEngine::getInstance()->playEffect("sound/up.wav");
 		P2Speed++;
 		P2speed->setString(std::to_string((int)P2Speed));
 		P1SkillCDs[4] = 30;

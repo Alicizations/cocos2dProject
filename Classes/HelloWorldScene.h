@@ -54,6 +54,9 @@ public:
 	void PowerUp(Sprite* player);
 	void SpeedUp(Sprite* player);
 	void CountCD(float f);
+	// living relative
+	void checkDIE();
+	void GameOver(int winner);
 	// bomb explode relative
 	void BombExploding(int BombPositionX, int BombPositionY, int power);
 	void RecoverBombCount(int PlayerTag);
@@ -78,6 +81,8 @@ private:
 	float fireGeneratingGap;
 	//决赛圈计时器
 	float fireTimeCount;
+	//决赛圈达到第几层
+	int fireStatus;
 
 	float dieDuration;
 	float winDuration;
@@ -107,6 +112,8 @@ private:
 	int P2InitialX;
 	int P2InitialY;
 	int P2Dir;
+	// living
+	bool IsOver;
 	// skill relative
 	int P1SkillCDs[5];
 	int P2SkillCDs[5];
